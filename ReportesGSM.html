@@ -436,9 +436,9 @@ function onLoggedIn(){
 
 function buildQuery(){
   var p=currentProfile,col=fbDb.collection('reports');
-  if(p.role==='admin')return col.orderBy('createdAt','desc');
-  if(p.role==='gerencia'){var sc=GERENCIA_SCOPE[p.sector]||[];if(!sc.length)return null;return col.where('sector','in',sc).orderBy('createdAt','desc');}
-  return col.where('sector','==',p.sector).orderBy('createdAt','desc');
+  if(p.role==='admin')return col;
+  if(p.role==='gerencia'){var sc=GERENCIA_SCOPE[p.sector]||[];if(!sc.length)return null;return col.where('sector','in',sc);}
+  return col.where('sector','==',p.sector);
 }
 
 function subscribeReports(){
@@ -447,6 +447,12 @@ function subscribeReports(){
   if(!q){allReports=[];renderAll();return;}
   unsubReports=q.onSnapshot(function(snap){
     allReports=snap.docs.map(function(d){return Object.assign({id:d.id},d.data());});
+    // Sort by createdAt descending in JS — no Firestore index needed
+    allReports.sort(function(a,b){
+      var ta=a.createdAt?a.createdAt.seconds||0:0;
+      var tb=b.createdAt?b.createdAt.seconds||0:0;
+      return tb-ta;
+    });
     renderAll();
   },function(err){
     if(err.code==='failed-precondition'){console.error('Falta índice Firestore:',err.message);alert('Falta crear un índice en Firestore. Abrí la consola del navegador (F12) para ver el link de creación automática.');}
@@ -605,16 +611,15 @@ function renderDetalle(r){
 
 G('btn-nuevo').onclick=function(){
   var p=currentProfile;
-  // If encargado, sector is fixed. Otherwise show selector.
   var sectorSel=G('nr-sector-sel'),sectorInp=G('nr-sector');
-  if(p.role==='encargado'){
-    sectorInp.value=SECTORS[p.sector]||p.sector||'';sectorInp.style.display='block';
-    if(sectorSel)sectorSel.style.display='none';
-    loadTipos(p.sector);
-  } else {
-    sectorInp.style.display='none';
-    if(sectorSel){sectorSel.style.display='block';sectorSel.value='';}
-    G('nr-tipo').innerHTML='<option value="">— Primero elegí un sector —</option>';
+  // Always show the selector, hide the disabled input
+  sectorInp.style.display='none';
+  if(sectorSel){
+    sectorSel.style.display='block';
+    // Pre-select sector for encargados, leave blank for others
+    sectorSel.value=p.sector||'';
+    if(p.sector) loadTipos(p.sector);
+    else G('nr-tipo').innerHTML='<option value="">— Primero elegí un sector —</option>';
   }
   G('nr-operario').value='';G('nr-desc').value='';G('nr-plazo').value='en_el_dia';G('nr-plazo').onchange();G('nr-err').classList.remove('on');
   G('mbg-nuevo').classList.add('on');setTimeout(function(){G('nr-operario').focus();},100);
@@ -642,7 +647,7 @@ G('nr-plazo').onchange=function(){
 };
 G('btn-nr-submit').onclick=function(){
   var p=currentProfile;
-  var sector=p.role==='encargado'?p.sector:(G('nr-sector-sel')?G('nr-sector-sel').value:'');
+  var sector=G('nr-sector-sel')?G('nr-sector-sel').value:(p.sector||'');
   var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim();
   var plazo=G('nr-plazo').value;
   var urgencia=getPlazoInfo(plazo).urgencia;
