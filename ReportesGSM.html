@@ -259,7 +259,8 @@ tr:hover td{background:#FAF7FF}
             <label class="mfl">Eliminar reportes anteriores a</label>
             <input type="date" id="del-fecha"/>
           </div>
-          <button class="ib dan" id="btn-del-historial">🗑 Eliminar historial</button>
+          <button class="ib dan" id="btn-del-historial">🗑 Eliminar hasta esa fecha</button>
+          <button class="ib dan" id="btn-del-todo" style="background:#8B2E2E;color:#fff;border-color:#8B2E2E">⚠️ Borrar todo</button>
         </div>
         <div class="merr" id="del-hist-err" style="margin-top:10px"></div>
         <div class="mok" id="del-hist-ok" style="margin-top:10px"></div>
@@ -412,11 +413,14 @@ G('btn-nuevo').onclick=function(){var p=currentProfile;var sectorSel=G('nr-secto
 function loadTipos(sector){var tipos=PROBLEM_TYPES[sector]||['Otro'],sel=G('nr-tipo');sel.innerHTML='<option value="">Selecciona</option>';tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
 (function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Selecciona un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';};})();
 
+// Solo admin y gerencias como destino de reportes
+var DIRIGIDO_SECTORS=['adm-compras','adm-ventas','ger-mantenimiento','ger-produccion','ger-administrativa'];
+
 // Populate dirigido selector in new report form
-(function(){var sel=G('nr-dirigido');if(!sel)return;Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});})();
+(function(){var sel=G('nr-dirigido');if(!sel)return;DIRIGIDO_SECTORS.forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});})();
 
 // Populate dirigido filter selector in activos
-(function(){var sel=G('filter-dirigido-sel');if(!sel)return;Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){filterDirigido=this.value;var chips=document.querySelectorAll('.fchip[data-d]');chips.forEach(function(c){c.classList.remove('active');});if(!this.value){var allChip=document.querySelector('.fchip[data-d="all"]');if(allChip)allChip.classList.add('active');}renderActivos();};})();
+(function(){var sel=G('filter-dirigido-sel');if(!sel)return;DIRIGIDO_SECTORS.forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){filterDirigido=this.value;var chips=document.querySelectorAll('.fchip[data-d]');chips.forEach(function(c){c.classList.remove('active');});if(!this.value){var allChip=document.querySelector('.fchip[data-d="all"]');if(allChip)allChip.classList.add('active');}renderActivos();};})();
 
 // Wire "Todos los sectores" chip for dirigido filter
 document.querySelectorAll('.fchip[data-d]').forEach(function(c){c.onclick=function(){filterDirigido='';G('filter-dirigido-sel').value='';document.querySelectorAll('.fchip[data-d]').forEach(function(x){x.classList.remove('active');});c.classList.add('active');renderActivos();};});
@@ -425,6 +429,21 @@ G('btn-nr-submit').onclick=function(){var p=currentProfile;var sector=G('nr-sect
 function loadAdminData(){fbDb.ref('users').once('value').then(function(snap){var data=snap.val()||{};var users=Object.values(data).sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});if(!users.length){G('admin-users-list').innerHTML='<div class="empty">Sin usuarios registrados.</div>';return;}var rows=users.map(function(u){return'<tr><td style="font-weight:700">'+esc(u.name||'-')+'</td><td>'+esc(u.email||'-')+'</td><td><span class="badge b-'+(u.role||'encargado')+'">'+esc(u.role||'-')+'</span></td><td>'+(SECTORS[u.sector]||esc(u.sector||'-'))+'</td><td style="color:#B0A0CC">'+fmtTime(u.createdAt)+'</td></tr>';}).join('');G('admin-users-list').innerHTML='<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Sector</th><th>Registro</th></tr></thead><tbody>'+rows+'</tbody></table>';});loadInvitations();}
 function loadInvitations(){fbDb.ref('invitaciones').once('value').then(function(snap){var data=snap.val()||{};var codes=Object.keys(data);if(!codes.length){G('admin-inv-list').innerHTML='<div class="empty">Sin codigos creados todavia.</div>';return;}var html='<div class="admin-grid">';codes.forEach(function(code){var inv=data[code];html+='<div class="inv-card"><div class="inv-code">'+esc(code)+'</div><div class="inv-meta">'+(SECTORS[inv.sector]||esc(inv.sector||''))+'<br>Rol: <strong>'+esc(inv.role||'')+'</strong>'+(inv.description?'<br>'+esc(inv.description):'')+' | Usos: <strong>'+(inv.usageCount||0)+'</strong> | Estado: <strong style="color:'+(inv.active?'#1E6640':'#8B2E2E')+'">'+(inv.active?'Activo':'Inactivo')+'</strong></div><div class="inv-actions"><button class="copy-btn" onclick="copyCode(\''+esc(code)+'\',this)">Copiar</button><button class="ib '+(inv.active?'dan':'grn')+' sm" onclick="toggleInv(\''+esc(code)+'\','+(inv.active)+',this)">'+(inv.active?'Desactivar':'Activar')+'</button></div></div>';});html+='</div>';G('admin-inv-list').innerHTML=html;});}
 
+G('btn-del-todo').onclick=function(){
+  var err=G('del-hist-err'),ok=G('del-hist-ok');
+  err.classList.remove('on');ok.classList.remove('on');
+  if(!confirm('Vas a eliminar PERMANENTEMENTE TODOS los reportes. Esta acción no se puede deshacer.\n\n¿Estás seguro?'))return;
+  if(!confirm('CONFIRMACIÓN FINAL: Se eliminarán TODOS los reportes sin excepción. ¿Confirmar?'))return;
+  G('btn-del-todo').disabled=true;
+  G('btn-del-todo').innerHTML='<span class="spin"></span> Eliminando...';
+  fbDb.ref('reports').remove().then(function(){
+    ok.textContent='Todos los reportes fueron eliminados.';ok.classList.add('on');
+    G('btn-del-todo').disabled=false;G('btn-del-todo').innerHTML='⚠️ Borrar todo';
+  }).catch(function(e){
+    err.textContent='Error: '+(e.message||'');err.classList.add('on');
+    G('btn-del-todo').disabled=false;G('btn-del-todo').innerHTML='⚠️ Borrar todo';
+  });
+};
 G('btn-del-historial').onclick=function(){
   var fecha=G('del-fecha').value;
   var err=G('del-hist-err'),ok=G('del-hist-ok');
