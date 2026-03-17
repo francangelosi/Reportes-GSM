@@ -238,9 +238,24 @@ tr:hover td{background:#FAF7FF}
       <div class="section-lbl" style="margin-bottom:10px">Usuarios registrados</div>
       <div id="admin-users-list"><div class="empty"><span class="spin"></span></div></div>
     </div>
-    <div>
+    <div style="margin-bottom:24px">
       <div class="section-lbl" style="margin-bottom:10px">Códigos de invitación</div>
       <div id="admin-inv-list"><div class="empty"><span class="spin"></span></div></div>
+    </div>
+    <div>
+      <div class="section-lbl" style="margin-bottom:10px">Eliminar historial de reportes</div>
+      <div style="background:#FDEAEA;border:2px solid #F0B0B0;border-radius:12px;padding:16px">
+        <p style="font-size:13px;color:#8B2E2E;margin-bottom:12px">Elimina permanentemente todos los reportes <strong>anteriores a la fecha seleccionada</strong>. Esta acción no se puede deshacer.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+          <div class="mfg" style="flex:1;min-width:160px">
+            <label class="mfl">Eliminar reportes anteriores a</label>
+            <input type="date" id="del-fecha"/>
+          </div>
+          <button class="ib dan" id="btn-del-historial">🗑 Eliminar historial</button>
+        </div>
+        <div class="merr" id="del-hist-err" style="margin-top:10px"></div>
+        <div class="mok" id="del-hist-ok" style="margin-top:10px"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -334,7 +349,7 @@ G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.val
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value;var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){var profile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(profile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
 G('btn-logout').onclick=function(){fbAuth.signOut();};
 function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';subscribeReports();showScreen('app');renderPage('dashboard');}
-function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}var p=currentProfile;reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});if(p.role==='encargado'){list=list.filter(function(r){return r.sector===p.sector;});}else if(p.role==='gerencia'){var scope=GERENCIA_SCOPE[p.sector]||[];list=list.filter(function(r){return scope.indexOf(r.sector)>=0;});}list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});allReports=list;renderAll();});}
+function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}var p=currentProfile;reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){try{var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});if(p.role==='encargado'){list=list.filter(function(r){return r.sector===p.sector;});}else if(p.role==='gerencia'){var scope=GERENCIA_SCOPE[p.sector]||[];list=list.filter(function(r){return scope.indexOf(r.sector)>=0;});}list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});allReports=list;renderAll();}catch(ex){console.error('Error rendering reports:',ex);}},function(err){console.error('DB error:',err);});}
 function createReport(data,cb){var id=uid();var report=Object.assign({},data,{id:id,status:'abierto',escalated:false,createdAt:Date.now(),updatedAt:Date.now(),timeline:[],closedAt:null,closedBy:null,resolution:null,justificacion:null});fbDb.ref('reports/'+id).set(report).then(function(){cb(null);}).catch(cb);}
 function addUpdate(reportId,entry,newStatus,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var tl=(r.timeline||[]).concat([entry]);var upd={timeline:tl,updatedAt:Date.now()};if(newStatus)upd.status=newStatus;fbDb.ref('reports/'+reportId).update(upd).then(function(){cb(null);}).catch(cb);}
 function closeReport(reportId,resolution,justificacion,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var entry={authorName:currentProfile.name,authorRole:currentProfile.role,text:'Reporte cerrado. Resolucion: '+resolution,timestamp:Date.now()};var tl=(r.timeline||[]).concat([entry]);fbDb.ref('reports/'+reportId).update({status:'resuelto',closedAt:Date.now(),closedBy:currentProfile.name,resolution:resolution,justificacion:justificacion||null,updatedAt:Date.now(),timeline:tl}).then(function(){cb(null);}).catch(cb);}
@@ -357,9 +372,42 @@ G('btn-nuevo').onclick=function(){var p=currentProfile;var sectorSel=G('nr-secto
 function loadTipos(sector){var tipos=PROBLEM_TYPES[sector]||['Otro'],sel=G('nr-tipo');sel.innerHTML='<option value="">Selecciona</option>';tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
 (function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Selecciona un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';};})();
 G('nr-plazo').onchange=function(){var cfg=getPlazoInfo(this.value);var hint=G('nr-plazo-hint');if(hint){hint.textContent=cfg.hint;hint.style.color=cfg.color;}};
-G('btn-nr-submit').onclick=function(){var p=currentProfile;var sector=G('nr-sector-sel')?G('nr-sector-sel').value:(p.sector||'');var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim(),plazo=G('nr-plazo').value;var urgencia=getPlazoInfo(plazo).urgencia;var err=G('nr-err');err.classList.remove('on');if(!sector){err.textContent='Selecciona un sector.';err.classList.add('on');return;}if(!tipo||!operario||!desc){err.textContent='Completa todos los campos obligatorios.';err.classList.add('on');return;}G('btn-nr-submit').disabled=true;G('btn-nr-submit').innerHTML='<span class="spin"></span> Guardando...';createReport({sector:sector,sectorLabel:SECTORS[sector]||sector,problemType:tipo,urgency:urgencia,plazo:plazo,description:desc,operarioName:operario,encargadoName:p.name,encargadoUid:p.uid},function(e){G('btn-nr-submit').disabled=false;G('btn-nr-submit').textContent='Crear reporte';if(e){err.textContent='Error al crear el reporte.';err.classList.add('on');}else closeModal('mbg-nuevo');});};
+G('btn-nr-submit').onclick=function(){var p=currentProfile;var sector=G('nr-sector-sel')?G('nr-sector-sel').value:(p.sector||'');var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim(),plazo=G('nr-plazo').value;var urgencia=getPlazoInfo(plazo).urgencia;var err=G('nr-err');err.classList.remove('on');if(!sector){err.textContent='Selecciona un sector.';err.classList.add('on');return;}if(!tipo||!operario||!desc){err.textContent='Completa todos los campos obligatorios.';err.classList.add('on');return;}G('btn-nr-submit').disabled=true;G('btn-nr-submit').innerHTML='<span class="spin"></span> Guardando...';createReport({sector:sector,sectorLabel:SECTORS[sector]||sector,problemType:tipo,urgency:urgencia,plazo:plazo,description:desc,operarioName:operario,encargadoName:p.name,encargadoUid:p.uid},function(e){G('btn-nr-submit').disabled=false;G('btn-nr-submit').textContent='Crear reporte';if(e){err.textContent='Error al crear el reporte: '+(e.message||'');err.classList.add('on');}else{closeModal('mbg-nuevo');}});};
 function loadAdminData(){fbDb.ref('users').once('value').then(function(snap){var data=snap.val()||{};var users=Object.values(data).sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});if(!users.length){G('admin-users-list').innerHTML='<div class="empty">Sin usuarios registrados.</div>';return;}var rows=users.map(function(u){return'<tr><td style="font-weight:700">'+esc(u.name||'-')+'</td><td>'+esc(u.email||'-')+'</td><td><span class="badge b-'+(u.role||'encargado')+'">'+esc(u.role||'-')+'</span></td><td>'+(SECTORS[u.sector]||esc(u.sector||'-'))+'</td><td style="color:#B0A0CC">'+fmtTime(u.createdAt)+'</td></tr>';}).join('');G('admin-users-list').innerHTML='<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Sector</th><th>Registro</th></tr></thead><tbody>'+rows+'</tbody></table>';});loadInvitations();}
 function loadInvitations(){fbDb.ref('invitaciones').once('value').then(function(snap){var data=snap.val()||{};var codes=Object.keys(data);if(!codes.length){G('admin-inv-list').innerHTML='<div class="empty">Sin codigos creados todavia.</div>';return;}var html='<div class="admin-grid">';codes.forEach(function(code){var inv=data[code];html+='<div class="inv-card"><div class="inv-code">'+esc(code)+'</div><div class="inv-meta">'+(SECTORS[inv.sector]||esc(inv.sector||''))+'<br>Rol: <strong>'+esc(inv.role||'')+'</strong>'+(inv.description?'<br>'+esc(inv.description):'')+' | Usos: <strong>'+(inv.usageCount||0)+'</strong> | Estado: <strong style="color:'+(inv.active?'#1E6640':'#8B2E2E')+'">'+(inv.active?'Activo':'Inactivo')+'</strong></div><div class="inv-actions"><button class="copy-btn" onclick="copyCode(\''+esc(code)+'\',this)">Copiar</button><button class="ib '+(inv.active?'dan':'grn')+' sm" onclick="toggleInv(\''+esc(code)+'\','+(inv.active)+',this)">'+(inv.active?'Desactivar':'Activar')+'</button></div></div>';});html+='</div>';G('admin-inv-list').innerHTML=html;});}
+
+G('btn-del-historial').onclick=function(){
+  var fecha=G('del-fecha').value;
+  var err=G('del-hist-err'),ok=G('del-hist-ok');
+  err.classList.remove('on');ok.classList.remove('on');
+  if(!fecha){err.textContent='Seleccioná una fecha.';err.classList.add('on');return;}
+  var fechaTs=new Date(fecha+'T23:59:59').getTime();
+  if(!confirm('Vas a eliminar PERMANENTEMENTE todos los reportes anteriores al '+fecha+'. Esta acción no se puede deshacer.\n\n¿Estás seguro?'))return;
+  if(!confirm('CONFIRMACIÓN FINAL: Se eliminarán todos los reportes anteriores al '+fecha+'. ¿Confirmar?'))return;
+  G('btn-del-historial').disabled=true;
+  G('btn-del-historial').innerHTML='<span class="spin"></span> Eliminando...';
+  fbDb.ref('reports').once('value').then(function(snap){
+    var data=snap.val()||{};
+    var toDelete=Object.keys(data).filter(function(k){return(data[k].createdAt||0)<=fechaTs;});
+    if(!toDelete.length){
+      ok.textContent='No hay reportes anteriores a esa fecha.';ok.classList.add('on');
+      G('btn-del-historial').disabled=false;G('btn-del-historial').textContent='🗑 Eliminar historial';
+      return;
+    }
+    var updates={};
+    toDelete.forEach(function(k){updates['reports/'+k]=null;});
+    return fbDb.ref().update(updates).then(function(){
+      ok.textContent='Se eliminaron '+toDelete.length+' reporte(s) anteriores al '+fecha+'.';
+      ok.classList.add('on');
+      G('btn-del-historial').disabled=false;
+      G('btn-del-historial').textContent='🗑 Eliminar historial';
+      G('del-fecha').value='';
+    });
+  }).catch(function(e){
+    err.textContent='Error al eliminar: '+(e.message||'');err.classList.add('on');
+    G('btn-del-historial').disabled=false;G('btn-del-historial').textContent='🗑 Eliminar historial';
+  });
+};
 window.copyCode=function(code,btn){navigator.clipboard.writeText(code).then(function(){btn.textContent='Copiado';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied');},2000);}).catch(function(){prompt('Copia este codigo:',code);});};
 window.toggleInv=function(code,currentActive,btn){btn.disabled=true;fbDb.ref('invitaciones/'+code+'/active').set(!currentActive).then(function(){loadInvitations();}).catch(function(){btn.disabled=false;alert('Error al actualizar.');});};
 window.confirmDeleteEntry=function(reportId,index){if(!confirm('Eliminar esta entrada del historial?'))return;deleteTimelineEntry(reportId,index,function(e){if(e)alert('Error al eliminar.');});};
