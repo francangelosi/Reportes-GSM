@@ -139,7 +139,24 @@ th{font-size:12px;font-weight:700;color:#7A6A9E;text-align:left;padding:8px 12px
 td{padding:10px 12px;border-bottom:1px solid #EDE6F9;font-size:13px;vertical-align:middle;color:#2D1F5E}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#FAF7FF}
+
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:#fff;border:2px solid #D8CAF0;border-left:4px solid #9B7FD4;border-radius:12px;padding:14px 16px;min-width:260px;max-width:320px;box-shadow:0 4px 20px rgba(0,0,0,.15);pointer-events:all;animation:toastIn .3s ease;font-size:13px;color:#2D1F5E}
+.toast.alta{border-left-color:#B03030}
+.toast-title{font-weight:700;margin-bottom:3px;font-size:13px}
+.toast-body{color:#7A6A9E;font-size:12px;line-height:1.4}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(120%)}}
 </style>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "d971dca2-f82a-4eae-a2c2-608f7dbe7bb5",
+    });
+  });
+</script>
 </head>
 <body>
 
@@ -362,9 +379,49 @@ G('l-pass').onkeydown=function(e){if(e.key==='Enter')G('btn-login').click();};
 G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.value=code;if(code.length<3){G('r-sector-preview').style.display='none';return;}fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(inv&&inv.active){G('r-sector-display').value=(SECTORS[inv.sector]||inv.sector)+' - '+inv.role;G('r-sector-preview').style.display='block';}else G('r-sector-preview').style.display='none';});};
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value;var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){var profile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(profile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
 G('btn-logout').onclick=function(){fbAuth.signOut();};
-function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';subscribeReports();showScreen('app');renderPage('dashboard');}
-function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){try{var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});allReports=list;renderAll();}catch(ex){console.error('Error rendering reports:',ex);}},function(err){console.error('DB error:',err);});}
-function createReport(data,cb){var id=uid();var report=Object.assign({},data,{id:id,status:'abierto',escalated:false,createdAt:Date.now(),updatedAt:Date.now(),timeline:[],closedAt:null,closedBy:null,resolution:null,justificacion:null});Object.keys(report).forEach(function(k){if(report[k]===undefined)report[k]=null;});fbDb.ref('reports/'+id).set(report).then(function(){cb(null);}).catch(cb);}
+function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';subscribeReports();showScreen('app');renderPage('dashboard');
+  // Tag user's sector in OneSignal for targeted notifications
+  if(p.sector){
+    try {
+      OneSignalDeferred.push(function(OneSignal){
+        OneSignal.User.addTag('sector', p.sector);
+        OneSignal.User.addTag('uid', p.uid||'');
+      });
+    } catch(e){}
+  }}
+function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){try{var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});checkNewReports(list);allReports=list;renderAll();}catch(ex){console.error('Error rendering reports:',ex);}},function(err){console.error('DB error:',err);});}
+function createReport(data,cb){var id=uid();var report=Object.assign({},data,{id:id,status:'abierto',escalated:false,createdAt:Date.now(),updatedAt:Date.now(),timeline:[],closedAt:null,closedBy:null,resolution:null,justificacion:null});Object.keys(report).forEach(function(k){if(report[k]===undefined)report[k]=null;});fbDb.ref('reports/'+id).set(report).then(function(){
+    cb(null);
+    // Send push notification if report has a dirigidoA sector
+    if(report.dirigidoA){
+      sendPushToSector(report);
+    }
+  }).catch(cb);}
+
+function sendPushToSector(report){
+  try {
+    var title = 'Reporte GSM — ' + (report.urgency||'').toUpperCase();
+    var body = (report.problemType||'Nuevo reporte') + ' desde ' + (report.sectorLabel||report.sector||'');
+    var url = 'https://francangelosi.github.io/Reportes-GSM/ReportesGSM.html';
+    // Tag users by their sector in Realtime DB and use OneSignal filters
+    OneSignalDeferred.push(function(OneSignal){
+      OneSignal.User.addTag('sector', report.dirigidoA);
+    });
+    // Send via OneSignal REST API using fetch
+    fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        app_id: 'd971dca2-f82a-4eae-a2c2-608f7dbe7bb5',
+        filters: [{field:'tag', key:'sector', relation:'=', value:report.dirigidoA}],
+        headings: {es: title, en: title},
+        contents: {es: body, en: body},
+        url: url,
+        web_push_topic: report.dirigidoA,
+      })
+    }).catch(function(e){ console.log('Push error:', e); });
+  } catch(e){ console.log('Push init error:', e); }
+}
 function addUpdate(reportId,entry,newStatus,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var cleanEntry={authorName:entry.authorName||'Usuario',authorRole:entry.authorRole||'usuario',text:entry.text||'',timestamp:entry.timestamp||Date.now()};var tl=(r.timeline||[]).concat([cleanEntry]);var upd={timeline:tl,updatedAt:Date.now()};if(newStatus)upd.status=newStatus;fbDb.ref('reports/'+reportId).update(upd).then(function(){cb(null);}).catch(cb);}
 function closeReport(reportId,resolution,justificacion,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var entry={authorName:currentProfile.name||currentProfile.email||'Usuario',authorRole:currentProfile.role||'usuario',text:'Reporte cerrado. Resolucion: '+resolution,timestamp:Date.now()};var tl=(r.timeline||[]).concat([entry]);var payload={status:'resuelto',closedAt:Date.now(),closedBy:currentProfile.name||currentProfile.email||'Usuario',resolution:resolution,justificacion:justificacion||null,updatedAt:Date.now(),timeline:tl};Object.keys(payload).forEach(function(k){if(payload[k]===undefined)payload[k]=null;});fbDb.ref('reports/'+reportId).update(payload).then(function(){cb(null);}).catch(cb);}
 function escalateReport(reportId,reason,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var next=ESCALA_A[r.urgency]||'alta';var entry={authorName:currentProfile.name||currentProfile.email||'Usuario',authorRole:'sistema',text:'Urgencia escalada a '+next.toUpperCase()+'. Motivo: '+reason,timestamp:Date.now()};var tl=(r.timeline||[]).concat([entry]);fbDb.ref('reports/'+reportId).update({urgency:next,escalated:true,escalationReason:reason,updatedAt:Date.now(),timeline:tl}).then(function(){cb(null);}).catch(cb);}
@@ -492,9 +549,56 @@ document.querySelectorAll('.fchip[data-h]').forEach(function(c){c.onclick=functi
 G('search-hist').oninput=function(){renderHistorial();};
 window.closeModal=function(id){G(id).classList.remove('on');if(id==='mbg-detalle')detalleReportId=null;};
 document.querySelectorAll('.mbg').forEach(function(m){m.onclick=function(e){if(e.target===m)closeModal(m.id);};});
+
+// ── TOAST NOTIFICATIONS ───────────────────────────────────────────────────────
+var knownReportIds = null; // null = first load, don't show toasts yet
+
+function showToast(title, body, urgency) {
+  var container = document.getElementById('toast-container');
+  if (!container) return;
+  var toast = document.createElement('div');
+  toast.className = 'toast' + (urgency === 'alta' ? ' alta' : '');
+  toast.innerHTML = '<div class="toast-title">' + title + '</div><div class="toast-body">' + body + '</div>';
+  container.appendChild(toast);
+  // Auto remove after 5 seconds
+  setTimeout(function() {
+    toast.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+  }, 5000);
+  // Click to dismiss
+  toast.onclick = function() {
+    toast.style.animation = 'toastOut .3s ease forwards';
+    setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+  };
+}
+
+function checkNewReports(reports) {
+  // First load — just register known IDs, no toasts
+  if (knownReportIds === null) {
+    knownReportIds = {};
+    reports.forEach(function(r) { knownReportIds[r.id] = true; });
+    return;
+  }
+  // Check for genuinely new reports
+  var p = currentProfile;
+  reports.forEach(function(r) {
+    if (knownReportIds[r.id]) return; // already known
+    knownReportIds[r.id] = true;
+    // Only notify if directed to current user's sector
+    if (!p || !p.sector) return;
+    if (r.dirigidoA !== p.sector) return;
+    var sectorName = SECTORS[r.sector] || r.sector;
+    var title = (r.urgency === 'alta' ? '🔴 ' : r.urgency === 'media' ? '🟡 ' : '🟢 ') + 'Nuevo reporte para tu sector';
+    var body = r.problemType + ' — desde ' + sectorName;
+    showToast(title, body, r.urgency);
+  });
+}
+
 setInterval(function(){if(allReports.length===0)return;renderDashboard();renderActivos();renderHistorial();refreshDetalleIfOpen();},60000);
 })();
 </script>
 
+
+<div id="toast-container"></div>
 </body>
 </html>
