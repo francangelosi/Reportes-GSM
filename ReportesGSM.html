@@ -551,14 +551,19 @@ function checkNewReports(reports) {
 
 // FCM Push Notifications
 function initFCM(userUid, userSector) {
+  if (!navigator.serviceWorker) return;
   try {
     var messaging = firebase.messaging();
-    messaging.getToken({
-      vapidKey: 'BI4q_6C3nIbSnxZlFtQ5q4wseeR5R2i93BNLBQlhJ6RzX6Pb3AY4pvlx9FtOVJAJicqrKls1WCJL9VTL2S3PUp0'
+    navigator.serviceWorker.register('/Reportes-GSM/firebase-messaging-sw.js').then(function(reg) {
+      messaging.useServiceWorker(reg);
+      return messaging.getToken({
+        vapidKey: 'BI4q_6C3nIbSnxZlFtQ5q4wseeR5R2i93BNLBQlhJ6RzX6Pb3AY4pvlx9FtOVJAJicqrKls1WCJL9VTL2S3PUp0',
+        serviceWorkerRegistration: reg
+      });
     }).then(function(token) {
       if (token) {
         fbDb.ref('users/' + userUid + '/fcmToken').set(token);
-        console.log('FCM token registrado');
+        console.log('FCM token OK');
       }
     }).catch(function(e) {
       console.log('FCM no disponible:', e.message);
