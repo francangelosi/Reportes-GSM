@@ -154,6 +154,8 @@ tr:hover td{background:#FAF7FF}
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "d971dca2-f82a-4eae-a2c2-608f7dbe7bb5",
+      serviceWorkerPath: "/Reportes-GSM/OneSignalSDKWorker.js",
+      serviceWorkerParam: { scope: "/Reportes-GSM/" },
       promptOptions: {
         slidedown: {
           prompts: [{
