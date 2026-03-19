@@ -8,6 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;line-height:normal}
 body{background:#F5F0FF;color:#2D1F5E;min-height:100vh}
@@ -370,7 +371,8 @@ G('l-pass').onkeydown=function(e){if(e.key==='Enter')G('btn-login').click();};
 G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.value=code;if(code.length<3){G('r-sector-preview').style.display='none';return;}fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(inv&&inv.active){G('r-sector-display').value=(SECTORS[inv.sector]||inv.sector)+' - '+inv.role;G('r-sector-preview').style.display='block';}else G('r-sector-preview').style.display='none';});};
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value;var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){var profile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(profile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
 G('btn-logout').onclick=function(){fbAuth.signOut();};
-function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';subscribeReports();showScreen('app');renderPage('dashboard');}
+function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';subscribeReports();showScreen('app');renderPage('dashboard');
+  initFCM(p.uid, p.sector||'');}
 function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){try{var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});checkNewReports(list);allReports=list;renderAll();}catch(ex){console.error('Error rendering reports:',ex);}},function(err){console.error('DB error:',err);});}
 function createReport(data,cb){var id=uid();var report=Object.assign({},data,{id:id,status:'abierto',escalated:false,createdAt:Date.now(),updatedAt:Date.now(),timeline:[],closedAt:null,closedBy:null,resolution:null,justificacion:null});Object.keys(report).forEach(function(k){if(report[k]===undefined)report[k]=null;});fbDb.ref('reports/'+id).set(report).then(function(){
     cb(null);
@@ -544,6 +546,30 @@ function checkNewReports(reports) {
     var body = r.problemType + ' — desde ' + sectorName;
     showToast(title, body, r.urgency);
   });
+}
+
+
+// FCM Push Notifications
+function initFCM(userUid, userSector) {
+  try {
+    var messaging = firebase.messaging();
+    messaging.getToken({
+      vapidKey: 'BI4q_6C3nIbSnxZlFtQ5q4wseeR5R2i93BNLBQlhJ6RzX6Pb3AY4pvlx9FtOVJAJicqrKls1WCJL9VTL2S3PUp0'
+    }).then(function(token) {
+      if (token) {
+        fbDb.ref('users/' + userUid + '/fcmToken').set(token);
+        console.log('FCM token registrado');
+      }
+    }).catch(function(e) {
+      console.log('FCM no disponible:', e.message);
+    });
+    messaging.onMessage(function(payload) {
+      var n = payload.notification || {};
+      showToast(n.title || 'Nuevo reporte', n.body || '', 'media');
+    });
+  } catch(e) {
+    console.log('FCM init error:', e.message);
+  }
 }
 
 setInterval(function(){if(allReports.length===0)return;renderDashboard();renderActivos();renderHistorial();refreshDetalleIfOpen();},60000);
