@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0051)file:///C:/Users/franc/Downloads/ReportesGSM_1.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reportes GSM</title>
 <meta name="theme-color" content="#9B7FD4">
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="./Reportes GSM_files/firebase-app.js.download"></script>
+<script src="./Reportes GSM_files/firebase-auth.js.download"></script>
+<script src="./Reportes GSM_files/firebase-database.js.download"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;line-height:normal}
 body{background:#F5F0FF;color:#2D1F5E;min-height:100vh}
@@ -148,19 +148,36 @@ tr:hover td{background:#FAF7FF}
 @keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(120%)}}
 </style>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script src="./Reportes GSM_files/OneSignalSDK.page.js.download" defer=""></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "d971dca2-f82a-4eae-a2c2-608f7dbe7bb5",
+      promptOptions: {
+        slidedown: {
+          prompts: [{
+            type: "push",
+            autoPrompt: true,
+            text: {
+              actionMessage: "Recibí alertas cuando lleguen reportes dirigidos a tu sector.",
+              acceptButton: "Permitir",
+              cancelButton: "Ahora no"
+            },
+            delay: {
+              timeDelay: 5,
+              pageViews: 1
+            }
+          }]
+        }
+      }
     });
   });
 </script>
 </head>
 <body>
 
-<div id="screen-loading" class="loading-full">
+<div id="screen-loading" class="loading-full" style="display: none;">
   <div class="spin" style="width:28px;height:28px"></div>
   <span>Cargando...</span>
 </div>
@@ -171,22 +188,22 @@ tr:hover td{background:#FAF7FF}
       <div class="logo">Granja San Miguel</div>
       <div class="logo-sub">Sistema de reportes de incidentes</div>
       <div class="tabs-auth">
-        <button class="tab-auth active" id="tab-login-btn" onclick="switchAuth('login')">Ingresar</button>
-        <button class="tab-auth" id="tab-reg-btn" onclick="switchAuth('register')">Registrarme</button>
+        <button class="tab-auth active" id="tab-login-btn" onclick="switchAuth(&#39;login&#39;)">Ingresar</button>
+        <button class="tab-auth" id="tab-reg-btn" onclick="switchAuth(&#39;register&#39;)">Registrarme</button>
       </div>
       <div class="auth-panel on" id="panel-login">
-        <div class="fg"><label class="fl">Email</label><input type="email" id="l-email" placeholder="usuario@granjasanmiguel.com"/></div>
-        <div class="fg"><label class="fl">Contraseña</label><input type="password" id="l-pass" placeholder="••••••••"/></div>
-        <button class="btn pri" id="btn-login">Ingresar</button>
-        <div class="err" id="l-err"></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" id="l-email" placeholder="usuario@granjasanmiguel.com"></div>
+        <div class="fg"><label class="fl">Contraseña</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+        <button class="btn pri" id="btn-login" disabled=""><span class="spin"></span> Ingresando...</button>
+        <div class="err" id="l-err">Email o contrasena incorrectos.</div>
       </div>
       <div class="auth-panel" id="panel-register">
         <div class="info-box">Necesitás un <strong>código de invitación</strong> para registrarte. Pedíselo al administrador del sistema.</div>
-        <div class="fg"><label class="fl">Código de invitación *</label><input type="text" id="r-code" placeholder="Ej: MANT-2026" autocomplete="off"/></div>
-        <div class="fg" id="r-sector-preview" style="display:none"><label class="fl">Sector asignado por el código</label><input id="r-sector-display" disabled/></div>
-        <div class="fg"><label class="fl">Tu nombre completo *</label><input type="text" id="r-name" placeholder="Nombre y apellido"/></div>
-        <div class="fg"><label class="fl">Email *</label><input type="email" id="r-email" placeholder="tu@email.com"/></div>
-        <div class="fg"><label class="fl">Contraseña *</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"/></div>
+        <div class="fg"><label class="fl">Código de invitación *</label><input type="text" id="r-code" placeholder="Ej: MANT-2026" autocomplete="off"></div>
+        <div class="fg" id="r-sector-preview" style="display:none"><label class="fl">Sector asignado por el código</label><input id="r-sector-display" disabled=""></div>
+        <div class="fg"><label class="fl">Tu nombre completo *</label><input type="text" id="r-name" placeholder="Nombre y apellido"></div>
+        <div class="fg"><label class="fl">Email *</label><input type="email" id="r-email" placeholder="tu@email.com"></div>
+        <div class="fg"><label class="fl">Contraseña *</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"></div>
         <button class="btn pri" id="btn-register">Crear cuenta</button>
         <div class="err" id="r-err"></div>
         <div class="ok-msg" id="r-ok"></div>
@@ -195,17 +212,17 @@ tr:hover td{background:#FAF7FF}
   </div>
 </div>
 
-<div id="main-app">
+<div id="main-app" class="on">
   <div class="nav">
     <span class="nav-brand">GSM Reportes</span>
     <span class="nav-tab active" data-tab="dashboard">Dashboard</span>
     <span class="nav-tab" data-tab="activos">Activos</span>
     <span class="nav-tab" data-tab="historial">Historial</span>
-    <span class="nav-tab" id="tab-admin" data-tab="admin" style="display:none">⚙ Admin</span>
+    <span class="nav-tab" id="tab-admin" data-tab="admin" style="display: block;">⚙ Admin</span>
     <div class="nav-right">
       <span class="alert-dot" id="alert-dot"></span>
       <span id="dirigido-alert" style="display:none;font-size:11px;font-weight:700;background:#F0EBF8;color:#7C5CBF;border:2px solid #C8B8EE;padding:2px 8px;border-radius:99px;cursor:pointer"></span>
-      <span class="uchip" id="nav-user"></span>
+      <span class="uchip" id="nav-user">francangelosi@gmail.com</span>
       <button class="ib sm" id="btn-logout">Salir</button>
     </div>
   </div>
@@ -217,16 +234,16 @@ tr:hover td{background:#FAF7FF}
       <div class="sc"><span class="sl">Urgencia Baja</span><span class="sv baja" id="cnt-baja">0</span></div>
       <div class="sc"><span class="sl">Resueltos</span><span class="sv" id="cnt-resueltos">0</span></div>
     </div>
-    <div id="dash-list"></div>
+    <div id="dash-list"><div class="empty"><div class="empty-icon">ok</div><div class="empty-title">Sin reportes activos</div><div>Todo esta en orden.</div></div></div>
   </div>
 
   <div class="pg" id="pg-activos">
     <div class="sh">
       <span class="stit">Reportes activos</span>
-      <button class="ib pri" id="btn-nuevo" style="display:none">+ Nuevo reporte</button>
+      <button class="ib pri" id="btn-nuevo" style="display: inline-flex;">+ Nuevo reporte</button>
     </div>
     <div class="fbar">
-      <input class="sinp" id="search-activos" placeholder="Buscar..."/>
+      <input class="sinp" id="search-activos" placeholder="Buscar...">
       <span class="fchip active" data-u="all">Todas</span>
       <span class="fchip" data-u="alta">Alta</span>
       <span class="fchip" data-u="media">Media</span>
@@ -237,21 +254,21 @@ tr:hover td{background:#FAF7FF}
       <span class="fchip active" data-d="all">Todos los sectores</span>
       <select id="filter-dirigido-sel" style="padding:5px 10px;border-radius:99px;font-size:12px;font-weight:700;border:2px solid #D8CAF0;background:#fff;color:#7A6A9E;cursor:pointer;outline:none">
         <option value="">— Elegí un sector —</option>
-      </select>
+      <option value="adm-compras">Administración Compras</option><option value="adm-ventas">Administración Ventas</option><option value="ger-mantenimiento">Gerencia de Mantenimiento</option><option value="ger-produccion">Gerencia de Producción</option><option value="ger-administrativa">Gerencia Administrativa</option></select>
     </div>
-    <div class="report-list" id="list-activos"></div>
+    <div class="report-list" id="list-activos"><div class="empty"><div class="empty-icon">o</div><div class="empty-title">Sin reportes</div><div>No hay reportes con los filtros aplicados.</div></div></div>
   </div>
 
   <div class="pg" id="pg-historial">
     <div class="sh"><span class="stit">Historial de reportes</span></div>
     <div class="fbar">
-      <input class="sinp" id="search-hist" placeholder="Buscar..."/>
+      <input class="sinp" id="search-hist" placeholder="Buscar...">
       <span class="fchip active" data-h="all">Todos</span>
       <span class="fchip" data-h="abierto">Abierto</span>
       <span class="fchip" data-h="en_proceso">En proceso</span>
       <span class="fchip" data-h="resuelto">Resuelto</span>
     </div>
-    <div class="report-list" id="list-hist"></div>
+    <div class="report-list" id="list-hist"><div class="empty"><div class="empty-icon">o</div><div class="empty-title">Sin reportes</div><div>No hay reportes con los filtros aplicados.</div></div></div>
   </div>
 
   <div class="pg" id="pg-admin">
@@ -274,7 +291,7 @@ tr:hover td{background:#FAF7FF}
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
           <div class="mfg" style="flex:1;min-width:160px">
             <label class="mfl">Eliminar reportes anteriores a</label>
-            <input type="date" id="del-fecha"/>
+            <input type="date" id="del-fecha">
           </div>
           <button class="ib dan" id="btn-del-historial">🗑 Eliminar hasta esa fecha</button>
           <button class="ib dan" id="btn-del-todo" style="background:#8B2E2E;color:#fff;border-color:#8B2E2E">⚠️ Borrar todo</button>
@@ -289,16 +306,16 @@ tr:hover td{background:#FAF7FF}
 <!-- MODAL: NUEVO REPORTE -->
 <div class="mbg" id="mbg-nuevo">
 <div class="modal">
-  <div class="mhead"><span class="mtit">Nuevo reporte de incidente</span><button class="ib sm" onclick="closeModal('mbg-nuevo')">✕</button></div>
+  <div class="mhead"><span class="mtit">Nuevo reporte de incidente</span><button class="ib sm" onclick="closeModal(&#39;mbg-nuevo&#39;)">✕</button></div>
   <div class="mbody">
     <div class="mfg"><label class="mfl">Sector</label>
-      <input id="nr-sector" disabled style="opacity:.6"/>
-      <select id="nr-sector-sel" style="display:none"></select>
+      <input id="nr-sector" disabled="" style="opacity:.6">
+      <select id="nr-sector-sel" style="display:none"><option value="">Selecciona un sector</option><option value="planta-alimento">Planta de Alimento Balanceado</option><option value="naves-postura">Naves de Postura</option><option value="naves-recria">Naves de Recría</option><option value="deposito-clasif">Depósito de Clasificación</option><option value="mantenimiento">Mantenimiento</option><option value="planta-hlp">Planta HLP</option><option value="adm-compras">Administración Compras</option><option value="adm-ventas">Administración Ventas</option><option value="sucursales">Sucursales</option><option value="ger-mantenimiento">Gerencia de Mantenimiento</option><option value="ger-produccion">Gerencia de Producción</option><option value="ger-administrativa">Gerencia Administrativa</option></select>
     </div>
-    <div class="mfg"><label class="mfl">Operario que detectó el problema *</label><input id="nr-operario" placeholder="Nombre del operario"/><span class="mhint">El operario te informó oralmente. Registrá su nombre acá.</span></div>
+    <div class="mfg"><label class="mfl">Operario que detectó el problema *</label><input id="nr-operario" placeholder="Nombre del operario"><span class="mhint">El operario te informó oralmente. Registrá su nombre acá.</span></div>
     <div class="mfg">
       <label class="mfl">Dirigido a *</label>
-      <select id="nr-dirigido"><option value="">— Seleccioná el sector responsable —</option></select>
+      <select id="nr-dirigido"><option value="">— Seleccioná el sector responsable —</option><option value="adm-compras">Administración Compras</option><option value="adm-ventas">Administración Ventas</option><option value="ger-mantenimiento">Gerencia de Mantenimiento</option><option value="ger-produccion">Gerencia de Producción</option><option value="ger-administrativa">Gerencia Administrativa</option></select>
       <span class="mhint">El sector seleccionado recibirá una alerta y podrá filtrar este reporte.</span>
     </div>
     <div class="mfg"><label class="mfl">Tipo de problema *</label><select id="nr-tipo"><option value="">— Seleccioná —</option></select></div>
@@ -306,7 +323,7 @@ tr:hover td{background:#FAF7FF}
       <label class="mfl">Plazo para resolver *</label>
       <select id="nr-plazo">
         <option value="inmediato">🔴 Inmediato — resolver ahora mismo</option>
-        <option value="en_el_dia" selected>🟠 En el día — antes de que termine el turno</option>
+        <option value="en_el_dia" selected="">🟠 En el día — antes de que termine el turno</option>
         <option value="24_48hs">🟡 24 a 48 hs — urgencia media</option>
         <option value="semana">🟢 Hasta una semana — baja urgencia</option>
       </select>
@@ -316,7 +333,7 @@ tr:hover td{background:#FAF7FF}
     <div class="merr" id="nr-err"></div>
   </div>
   <div class="mfoot">
-    <button class="ib" onclick="closeModal('mbg-nuevo')">Cancelar</button>
+    <button class="ib" onclick="closeModal(&#39;mbg-nuevo&#39;)">Cancelar</button>
     <button class="ib pri" id="btn-nr-submit">Crear reporte</button>
   </div>
 </div>
@@ -325,7 +342,7 @@ tr:hover td{background:#FAF7FF}
 <!-- MODAL: DETALLE -->
 <div class="mbg" id="mbg-detalle">
 <div class="modal">
-  <div class="mhead"><span class="mtit">Detalle del reporte</span><button class="ib sm" onclick="closeModal('mbg-detalle')">✕</button></div>
+  <div class="mhead"><span class="mtit">Detalle del reporte</span><button class="ib sm" onclick="closeModal(&#39;mbg-detalle&#39;)">✕</button></div>
   <div class="mbody" id="detalle-body"></div>
 </div>
 </div>
@@ -333,18 +350,18 @@ tr:hover td{background:#FAF7FF}
 <!-- MODAL: NUEVO CÓDIGO -->
 <div class="mbg" id="mbg-inv">
 <div class="modal">
-  <div class="mhead"><span class="mtit">Nuevo código de invitación</span><button class="ib sm" onclick="closeModal('mbg-inv')">✕</button></div>
+  <div class="mhead"><span class="mtit">Nuevo código de invitación</span><button class="ib sm" onclick="closeModal(&#39;mbg-inv&#39;)">✕</button></div>
   <div class="mbody">
     <div class="info-box">El código puede usarse múltiples veces. Todos los que lo usen quedarán asignados al mismo sector y rol.</div>
-    <div class="mfg"><label class="mfl">Código *</label><input id="inv-code" placeholder="Ej: MANT-2026"/><span class="mhint">Solo letras, números y guiones. Se guarda en mayúsculas.</span></div>
-    <div class="mfg"><label class="mfl">Sector asignado *</label><select id="inv-sector"><option value="">— Seleccioná —</option></select></div>
+    <div class="mfg"><label class="mfl">Código *</label><input id="inv-code" placeholder="Ej: MANT-2026"><span class="mhint">Solo letras, números y guiones. Se guarda en mayúsculas.</span></div>
+    <div class="mfg"><label class="mfl">Sector asignado *</label><select id="inv-sector"><option value="">— Seleccioná —</option><option value="planta-alimento">Planta de Alimento Balanceado</option><option value="naves-postura">Naves de Postura</option><option value="naves-recria">Naves de Recría</option><option value="deposito-clasif">Depósito de Clasificación</option><option value="mantenimiento">Mantenimiento</option><option value="planta-hlp">Planta HLP</option><option value="adm-compras">Administración Compras</option><option value="adm-ventas">Administración Ventas</option><option value="sucursales">Sucursales</option><option value="ger-mantenimiento">Gerencia de Mantenimiento</option><option value="ger-produccion">Gerencia de Producción</option><option value="ger-administrativa">Gerencia Administrativa</option></select></div>
     <div class="mfg"><label class="mfl">Rol asignado *</label><select id="inv-role"><option value="encargado">Encargado</option><option value="gerencia">Gerencia</option><option value="admin">Admin</option></select></div>
-    <div class="mfg"><label class="mfl">Descripción (opcional)</label><input id="inv-desc" placeholder="Ej: Para el equipo de mantenimiento"/></div>
+    <div class="mfg"><label class="mfl">Descripción (opcional)</label><input id="inv-desc" placeholder="Ej: Para el equipo de mantenimiento"></div>
     <div class="merr" id="inv-err"></div>
     <div class="mok" id="inv-ok"></div>
   </div>
   <div class="mfoot">
-    <button class="ib" onclick="closeModal('mbg-inv')">Cancelar</button>
+    <button class="ib" onclick="closeModal(&#39;mbg-inv&#39;)">Cancelar</button>
     <button class="ib pri" id="btn-inv-submit">Crear código</button>
   </div>
 </div>
@@ -600,5 +617,5 @@ setInterval(function(){if(allReports.length===0)return;renderDashboard();renderA
 
 
 <div id="toast-container"></div>
-</body>
-</html>
+
+</body></html>
