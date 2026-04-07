@@ -14,21 +14,24 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function(payload) {
+  var data = payload.data || {};
   var n = payload.notification || {};
   var title = n.title || 'Nuevo reporte GSM';
   var body = n.body || '';
   var url = 'https://francangelosi.github.io/Reportes-GSM/ReportesGSM.html';
-  
+
   self.registration.showNotification(title, {
     body: body,
-    icon: '/favicon.ico',
-    data: { url: url }
+    icon: 'https://francangelosi.github.io/Reportes-GSM/icon-192.png',
+    badge: 'https://francangelosi.github.io/Reportes-GSM/icon-192.png',
+    data: { url: url, dirigidoA: data.dirigidoA || '' },
+    requireInteraction: true
   });
 });
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  var url = (event.notification.data && event.notification.data.url) || 
+  var url = (event.notification.data && event.notification.data.url) ||
             'https://francangelosi.github.io/Reportes-GSM/ReportesGSM.html';
   event.waitUntil(clients.openWindow(url));
 });
