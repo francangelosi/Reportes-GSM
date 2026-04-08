@@ -577,7 +577,10 @@ G('btn-del-range').onclick=function(){
     btn.disabled=false;btn.textContent='Eliminar estos reportes';
   }).catch(function(e){
     err.textContent='Error al eliminar: '+(e.message||'');err.classList.add('on');
-    window.closeModal=function(id){G(id).classList.remove('on');if(id==='mbg-detalle')detalleReportId=null;};
+    btn.disabled=false;btn.textContent='Eliminar estos reportes';
+  });
+};
+window.closeModal=function(id){G(id).classList.remove('on');if(id==='mbg-detalle')detalleReportId=null;};
 document.querySelectorAll('.mbg').forEach(function(m){m.onclick=function(e){if(e.target===m)closeModal(m.id);};});
 setInterval(function(){if(allReports.length===0)return;renderDashboard();renderActivos();renderHistorial();refreshDetalleIfOpen();},60000);
 })();
