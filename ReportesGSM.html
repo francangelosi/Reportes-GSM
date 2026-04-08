@@ -349,9 +349,28 @@ tr:hover td{background:var(--verde-claro)}
       <div class="section-lbl" style="margin-bottom:10px">Usuarios registrados</div>
       <div id="admin-users-list"><div class="empty"><span class="spin"></span></div></div>
     </div>
-    <div>
+    <div style="margin-bottom:24px">
       <div class="section-lbl" style="margin-bottom:10px">Códigos de invitación</div>
       <div id="admin-inv-list"><div class="empty"><span class="spin"></span></div></div>
+    </div>
+    <div style="background:var(--rojo-claro);border:2px solid var(--rojo-borde);border-radius:12px;padding:16px">
+      <div style="font-size:13px;font-weight:800;color:var(--rojo);margin-bottom:4px;font-family:'Nunito',sans-serif">🗑 Eliminar reportes por rango de fechas</div>
+      <div style="font-size:12px;color:var(--rojo);margin-bottom:14px;opacity:.8">Zona de peligro — esta acción no se puede deshacer.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
+        <div>
+          <div style="font-size:11px;color:var(--gris-sub);font-weight:700;margin-bottom:4px">DESDE</div>
+          <input type="date" id="del-desde" style="padding:8px 10px;border:2px solid var(--rojo-borde);border-radius:8px;font-size:13px;background:#fff;color:var(--gris-txt);outline:none;width:150px"/>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gris-sub);font-weight:700;margin-bottom:4px">HASTA</div>
+          <input type="date" id="del-hasta" style="padding:8px 10px;border:2px solid var(--rojo-borde);border-radius:8px;font-size:13px;background:#fff;color:var(--gris-txt);outline:none;width:150px"/>
+        </div>
+        <button class="ib" id="btn-del-preview" style="border-color:var(--rojo-borde);color:var(--rojo)">Ver cuántos reportes</button>
+      </div>
+      <div id="del-preview" style="font-size:13px;color:var(--gris-txt);margin-bottom:10px;display:none"></div>
+      <button class="ib dan" id="btn-del-range" style="display:none">Eliminar estos reportes</button>
+      <div class="merr" id="del-err" style="margin-top:10px"></div>
+      <div class="mok" id="del-ok" style="margin-top:10px"></div>
     </div>
   </div>
 </div>
@@ -523,7 +542,42 @@ messaging.onMessage(function(payload){var data=payload.data||{};var dirigidos=da
 if(dirigidos.length>0&&currentProfile&&currentProfile.sector){if(dirigidos.indexOf(currentProfile.sector)<0)return;}var n=payload.notification||{};showToast(n.title||'Nuevo reporte',n.body||'',data.urgency||'media');});}catch(e){console.log('FCM init:',e.message);}}
 
 (function(){var sel=G('filter-dirigido-sel');if(!sel)return;DIRIGIDO_SECTORS.forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){filterDirigido=this.value;renderActivos();};})();
-window.closeModal=function(id){G(id).classList.remove('on');if(id==='mbg-detalle')detalleReportId=null;};
+G('btn-del-preview').onclick=function(){
+  var desde=G('del-desde').value,hasta=G('del-hasta').value;
+  var err=G('del-err'),ok=G('del-ok'),preview=G('del-preview'),btnDel=G('btn-del-range');
+  err.classList.remove('on');ok.classList.remove('on');preview.style.display='none';btnDel.style.display='none';
+  if(!desde||!hasta){err.textContent='Seleccioná fecha desde y hasta.';err.classList.add('on');return;}
+  var desdeMs=new Date(desde+'T00:00:00').getTime();
+  var hastaMs=new Date(hasta+'T23:59:59').getTime();
+  if(desdeMs>hastaMs){err.textContent='La fecha "desde" debe ser anterior a "hasta".';err.classList.add('on');return;}
+  var matches=allReports.filter(function(r){return r.createdAt>=desdeMs&&r.createdAt<=hastaMs;});
+  if(!matches.length){preview.textContent='No hay reportes en ese rango de fechas.';preview.style.display='block';return;}
+  preview.innerHTML='Se encontraron <strong>'+matches.length+' reporte'+(matches.length>1?'s':'')+
+    '</strong> entre el '+new Date(desdeMs).toLocaleDateString('es-AR')+' y el '+new Date(hastaMs).toLocaleDateString('es-AR')+'.';
+  preview.style.display='block';
+  btnDel.style.display='inline-flex';
+  btnDel._matches=matches;
+};
+
+G('btn-del-range').onclick=function(){
+  var btn=G('btn-del-range'),err=G('del-err'),ok=G('del-ok');
+  var matches=btn._matches||[];
+  if(!matches.length)return;
+  if(!confirm('¿Eliminar '+matches.length+' reporte'+(matches.length>1?'s':'')+' del rango seleccionado? Esta acción no se puede deshacer.'))return;
+  if(!confirm('Confirmación final: ¿seguro que querés eliminar estos '+matches.length+' reportes?'))return;
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Eliminando...';
+  err.classList.remove('on');ok.classList.remove('on');
+  var promises=matches.map(function(r){return fbDb.ref('reports/'+r.id).remove();});
+  Promise.all(promises).then(function(){
+    ok.textContent='Se eliminaron '+matches.length+' reporte'+(matches.length>1?'s':'')+' correctamente.';
+    ok.classList.add('on');
+    btn.style.display='none';
+    G('del-preview').style.display='none';
+    G('del-desde').value='';G('del-hasta').value='';
+    btn.disabled=false;btn.textContent='Eliminar estos reportes';
+  }).catch(function(e){
+    err.textContent='Error al eliminar: '+(e.message||'');err.classList.add('on');
+    window.closeModal=function(id){G(id).classList.remove('on');if(id==='mbg-detalle')detalleReportId=null;};
 document.querySelectorAll('.mbg').forEach(function(m){m.onclick=function(e){if(e.target===m)closeModal(m.id);};});
 setInterval(function(){if(allReports.length===0)return;renderDashboard();renderActivos();renderHistorial();refreshDetalleIfOpen();},60000);
 })();
