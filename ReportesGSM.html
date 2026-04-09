@@ -516,7 +516,87 @@ var DIRIGIDO_SECTORS=['adm-compras','adm-ventas','ger-mantenimiento','ger-produc
 (function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Selecciona un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';};})();
 G('nr-plazo').onchange=function(){var cfg=getPlazoInfo(this.value);var hint=G('nr-plazo-hint');if(hint){hint.textContent=cfg.hint;hint.style.color=cfg.color;}};
 G('btn-nr-submit').onclick=function(){var p=currentProfile;var sector=G('nr-sector-sel')?G('nr-sector-sel').value:(p.sector||'');var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim(),plazo=G('nr-plazo').value;var urgencia=getPlazoInfo(plazo).urgencia;var err=G('nr-err');err.classList.remove('on');if(!sector){err.textContent='Selecciona un sector.';err.classList.add('on');return;}if(!tipo||!operario||!desc){err.textContent='Completa todos los campos obligatorios.';err.classList.add('on');return;}G('btn-nr-submit').disabled=true;G('btn-nr-submit').innerHTML='<span class="spin"></span> Guardando...';var dirigidoChecks=document.querySelectorAll('input[name="nr-dirigido"]:checked');var dirigidoA=[];var dirigidoLabels=[];dirigidoChecks.forEach(function(cb){dirigidoA.push(cb.value);dirigidoLabels.push(SECTORS[cb.value]||cb.value);});createReport({sector:sector,sectorLabel:SECTORS[sector]||sector,problemType:tipo,urgency:urgencia,plazo:plazo,description:desc,operarioName:operario,encargadoName:p.name||p.email||'Usuario',encargadoUid:p.uid||'',dirigidoA:dirigidoA.length?dirigidoA:null,dirigidoLabel:dirigidoLabels.length?dirigidoLabels.join(', '):null,recurrencias:parseInt(G('nr-recurrencias').value)||1},function(e){G('btn-nr-submit').disabled=false;G('btn-nr-submit').textContent='Crear reporte';if(e){err.textContent='Error al crear el reporte.';err.classList.add('on');}else closeModal('mbg-nuevo');});};
-function loadAdminData(){fbDb.ref('users').once('value').then(function(snap){var data=snap.val()||{};var users=Object.values(data).sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});if(!users.length){G('admin-users-list').innerHTML='<div class="empty">Sin usuarios registrados.</div>';return;}var rows=users.map(function(u){return'<tr><td style="font-weight:700">'+esc(u.name||'-')+'</td><td>'+esc(u.email||'-')+'</td><td><span class="badge b-'+(u.role||'encargado')+'">'+esc(u.role||'-')+'</span></td><td>'+(SECTORS[u.sector]||esc(u.sector||'-'))+'</td><td style="color:#B0A0CC">'+fmtTime(u.createdAt)+'</td></tr>';}).join('');G('admin-users-list').innerHTML='<table><thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Sector</th><th>Registro</th></tr></thead><tbody>'+rows+'</tbody></table>';});loadInvitations();}
+var _adminUsers={};
+function loadAdminData(){
+  G('admin-users-list').innerHTML='<div class="empty"><span class="spin"></span></div>';
+  fbDb.ref('users').once('value').then(function(snap){
+    var data=snap.val()||{};
+    _adminUsers=data;
+    var users=Object.values(data).sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});
+    if(!users.length){G('admin-users-list').innerHTML='<div class="empty">Sin usuarios registrados.</div>';return;}
+    var html='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">'
+      +'<button class="ib sm" id="btn-sel-all">Seleccionar todos</button>'
+      +'<button class="ib sm" id="btn-sel-none">Deseleccionar todos</button>'
+      +'<button class="ib warn sm" id="btn-sel-orphans">⚠ Marcar posibles huérfanos</button>'
+      +'<button class="ib dan sm" id="btn-del-selected" style="margin-left:auto;display:none">Eliminar seleccionados</button>'
+      +'</div>'
+      +'<table><thead><tr><th style="width:32px"></th><th>Nombre</th><th>Email</th><th>Rol</th><th>Sector</th><th>Registro</th></tr></thead><tbody>';
+    users.forEach(function(u){
+      var uid=u.uid||'';
+      html+='<tr data-uid="'+esc(uid)+'">'
+        +'<td><input type="checkbox" class="user-chk" data-uid="'+esc(uid)+'" style="accent-color:var(--rojo);width:16px;height:16px;cursor:pointer"/></td>'
+        +'<td style="font-weight:700">'+esc(u.name||'-')+'</td>'
+        +'<td style="font-size:12px">'+esc(u.email||'-')+'</td>'
+        +'<td><span class="badge b-'+(u.role||'encargado')+'">'+esc(u.role||'-')+'</span></td>'
+        +'<td style="font-size:12px">'+(SECTORS[u.sector]||esc(u.sector||'-'))+'</td>'
+        +'<td style="color:#8FA898;font-size:11px">'+fmtTime(u.createdAt)+'</td>'
+        +'</tr>';
+    });
+    html+='</tbody></table>'
+      +'<div class="merr" id="del-users-err" style="margin-top:10px"></div>'
+      +'<div class="mok" id="del-users-ok" style="margin-top:10px"></div>';
+    G('admin-users-list').innerHTML=html;
+    // Eventos checkboxes
+    function updateDelBtn(){
+      var checked=document.querySelectorAll('.user-chk:checked');
+      var btn=G('btn-del-selected');
+      if(!btn)return;
+      if(checked.length>0){btn.style.display='inline-flex';btn.textContent='Eliminar '+checked.length+' usuario'+(checked.length>1?'s':'');}
+      else btn.style.display='none';
+    }
+    document.querySelectorAll('.user-chk').forEach(function(cb){cb.onchange=updateDelBtn;});
+    G('btn-sel-all').onclick=function(){document.querySelectorAll('.user-chk').forEach(function(cb){cb.checked=true;});updateDelBtn();};
+    G('btn-sel-none').onclick=function(){document.querySelectorAll('.user-chk').forEach(function(cb){cb.checked=false;});updateDelBtn();};
+    // Marcar huérfanos: usuarios cuyo UID no coincide con ningún usuario activo en Auth
+    // Como no tenemos acceso directo a Auth desde el cliente, marcamos los que tienen email duplicado
+    // (mismo email, distinto UID = el viejo es el huérfano)
+    G('btn-sel-orphans').onclick=function(){
+      var emailMap={};
+      // Agrupar por email, quedarse con el más reciente
+      users.forEach(function(u){
+        if(!u.email)return;
+        if(!emailMap[u.email]||u.createdAt>emailMap[u.email].createdAt)emailMap[u.email]=u;
+      });
+      // Marcar los que tienen el mismo email pero NO son el más reciente
+      document.querySelectorAll('.user-chk').forEach(function(cb){
+        var uid=cb.dataset.uid;
+        var u=data[uid];
+        if(!u||!u.email){cb.checked=false;return;}
+        var newest=emailMap[u.email];
+        cb.checked=(newest&&newest.uid!==uid);
+      });
+      updateDelBtn();
+    };
+    G('btn-del-selected').onclick=function(){
+      var checked=document.querySelectorAll('.user-chk:checked');
+      if(!checked.length)return;
+      var names=Array.from(checked).map(function(cb){var u=data[cb.dataset.uid];return(u&&u.name)||cb.dataset.uid;});
+      if(!confirm('¿Eliminar estos '+checked.length+' usuario'+(checked.length>1?'s':'')+' de la base de datos?\n\n'+names.join('\n')))return;
+      var uids=Array.from(checked).map(function(cb){return cb.dataset.uid;});
+      var promises=uids.map(function(uid){return fbDb.ref('users/'+uid).remove();});
+      G('btn-del-selected').disabled=true;
+      G('btn-del-selected').innerHTML='<span class="spin"></span> Eliminando...';
+      Promise.all(promises).then(function(){
+        var ok=G('del-users-ok');if(ok){ok.textContent='Se eliminaron '+uids.length+' usuario'+(uids.length>1?'s':'')+' correctamente.';ok.classList.add('on');}
+        loadAdminData();
+      }).catch(function(e){
+        var err=G('del-users-err');if(err){err.textContent='Error: '+(e.message||'');err.classList.add('on');}
+        G('btn-del-selected').disabled=false;G('btn-del-selected').textContent='Eliminar seleccionados';
+      });
+    };
+  });
+  loadInvitations();
+}
 function loadInvitations(){fbDb.ref('invitaciones').once('value').then(function(snap){var data=snap.val()||{};var codes=Object.keys(data);if(!codes.length){G('admin-inv-list').innerHTML='<div class="empty">Sin codigos creados todavia.</div>';return;}var html='<div class="admin-grid">';codes.forEach(function(code){var inv=data[code];html+='<div class="inv-card"><div class="inv-code">'+esc(code)+'</div><div class="inv-meta">'+(SECTORS[inv.sector]||esc(inv.sector||''))+'<br>Rol: <strong>'+esc(inv.role||'')+'</strong>'+(inv.description?'<br>'+esc(inv.description):'')+' | Usos: <strong>'+(inv.usageCount||0)+'</strong> | Estado: <strong style="color:'+(inv.active?'#1E6640':'#8B2E2E')+'">'+(inv.active?'Activo':'Inactivo')+'</strong></div><div class="inv-actions"><button class="copy-btn" onclick="copyCode(\''+esc(code)+'\',this)">Copiar</button><button class="ib '+(inv.active?'dan':'grn')+' sm" onclick="toggleInv(\''+esc(code)+'\','+(inv.active)+',this)">'+(inv.active?'Desactivar':'Activar')+'</button></div></div>';});html+='</div>';G('admin-inv-list').innerHTML=html;});}
 window.copyCode=function(code,btn){navigator.clipboard.writeText(code).then(function(){btn.textContent='Copiado';btn.classList.add('copied');setTimeout(function(){btn.textContent='Copiar';btn.classList.remove('copied');},2000);}).catch(function(){prompt('Copia este codigo:',code);});};
 window.toggleInv=function(code,currentActive,btn){btn.disabled=true;fbDb.ref('invitaciones/'+code+'/active').set(!currentActive).then(function(){loadInvitations();}).catch(function(){btn.disabled=false;alert('Error al actualizar.');});};
