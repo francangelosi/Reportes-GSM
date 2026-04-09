@@ -657,9 +657,47 @@ function renderEstadisticas(){var desde=G('stat-desde').value,hasta=G('stat-hast
 G('btn-stat-apply').onclick=function(){renderEstadisticas();};
 
 var knownReportIds=null;
-function checkNewReports(reports){if(knownReportIds===null){knownReportIds={};reports.forEach(function(r){knownReportIds[r.id]=true;});return;}var p=currentProfile;reports.forEach(function(r){if(knownReportIds[r.id])return;knownReportIds[r.id]=true;if(!p||!p.sector)return;var dirs=getDirigidoArray(r);// Notificar solo si el sector del usuario está en dirigidoA
-// Si no hay dirigidoA, no notificar (el reporte no fue dirigido a nadie específico)
-if(!dirs.length)return;if(dirs.indexOf(p.sector)<0)return;var emoji=r.urgency==='alta'?'🔴':r.urgency==='media'?'🟡':'🟢';showToast(emoji+' Reporte para tu sector',r.problemType+' — desde '+(r.sectorLabel||r.sector),r.urgency);});} 
+var knownReportStatuses={};
+function checkNewReports(reports){
+  var p=currentProfile;
+  // Primera carga: inicializar sin notificar
+  if(knownReportIds===null){
+    knownReportIds={};
+    reports.forEach(function(r){knownReportIds[r.id]=true;knownReportStatuses[r.id]=r.status;});
+    return;
+  }
+  reports.forEach(function(r){
+    // 1. Reporte NUEVO dirigido al sector del usuario
+    if(!knownReportIds[r.id]){
+      knownReportIds[r.id]=true;
+      knownReportStatuses[r.id]=r.status;
+      if(!p||!p.sector)return;
+      var dirs=getDirigidoArray(r);
+      if(!dirs.length)return;
+      if(dirs.indexOf(p.sector)<0)return;
+      var emoji=r.urgency==='alta'?'🔴':r.urgency==='media'?'🟡':'🟢';
+      showToast(emoji+' Reporte para tu sector',r.problemType+' — desde '+(r.sectorLabel||r.sector),r.urgency);
+      return;
+    }
+    // 2. Cambio de ESTADO en reporte que el usuario creó
+    var prevStatus=knownReportStatuses[r.id];
+    if(prevStatus&&r.status!==prevStatus){
+      knownReportStatuses[r.id]=r.status;
+      // Notificar solo al creador del reporte
+      if(!p||!p.uid)return;
+      if(r.encargadoUid!==p.uid)return;
+      if(r.status==='en_proceso'){
+        showToast('🔧 Reporte en proceso','"'+r.problemType+'" está siendo atendido','media');
+      } else if(r.status==='resuelto'){
+        showToast('✅ Reporte resuelto','"'+r.problemType+'" fue marcado como resuelto','baja');
+      } else if(r.status==='abierto'){
+        showToast('🔁 Reporte reabierto','"'+r.problemType+'" volvió a estado abierto','media');
+      }
+    } else if(!prevStatus){
+      knownReportStatuses[r.id]=r.status;
+    }
+  });
+}
 
 function initFCM(userUid){if(!navigator.serviceWorker)return;try{var messaging=firebase.messaging();navigator.serviceWorker.register('/Reportes-GSM/firebase-messaging-sw.js').then(function(reg){messaging.useServiceWorker(reg);return messaging.getToken({vapidKey:'BI4q_6C3nIbSnxZlFtQ5q4wseeR5R2i93BNLBQlhJ6RzX6Pb3AY4pvlx9FtOVJAJicqrKls1WCJL9VTL2S3PUp0',serviceWorkerRegistration:reg});}).then(function(token){if(token){fbDb.ref('users/'+userUid+'/fcmToken').set(token);console.log('FCM token OK');}}).catch(function(e){console.log('FCM:',e.message);});// Solo mostrar el toast si la notificación push está dirigida al sector del usuario
 messaging.onMessage(function(payload){var data=payload.data||{};var dirigidos=data.dirigidoA?data.dirigidoA.split(','):[];// Si la Cloud Function envió info de destinatarios, filtrar
