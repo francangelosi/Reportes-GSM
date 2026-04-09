@@ -53,24 +53,41 @@ textarea{resize:vertical;min-height:72px}
 .ok-msg{color:#1E6640;font-size:13px;background:var(--verde-claro);border:1px solid var(--verde-borde);padding:8px 12px;border-radius:8px;margin-top:10px;display:none}
 .ok-msg.on{display:block}
 .info-box{background:var(--dorado-claro);border:1px solid var(--dorado-borde);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--gris-txt);line-height:1.6;margin-bottom:14px}
-#main-app{display:none;flex-direction:column;min-height:100vh}
-#main-app.on{display:flex}
-.nav{background:var(--verde);padding:0 14px;display:flex;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
-.nav-brand{display:flex;align-items:center;gap:8px;padding:10px 0;margin-right:10px;text-decoration:none;user-select:none}
-.nav-brand-icon{width:26px;height:26px;flex-shrink:0}
-.nav-brand-text{font-size:13px;font-weight:800;color:#fff;font-family:'Nunito',sans-serif;white-space:nowrap;letter-spacing:.01em}
-.nav-brand-text span{color:var(--dorado-borde);font-weight:400;font-size:11px;display:block;line-height:1}
-.nav-tab{padding:12px 9px;font-size:12px;color:rgba(255,255,255,.65);cursor:pointer;border-bottom:3px solid transparent;user-select:none;white-space:nowrap;font-weight:600;font-family:'Nunito',sans-serif;transition:color .15s}
-.nav-tab:hover{color:rgba(255,255,255,.9)}
-.nav-tab.active{color:#fff;border-bottom-color:var(--dorado-borde);font-weight:700}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:6px;padding:8px 0}
-.uchip{font-size:11px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.12);padding:3px 8px;border-radius:99px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(255,255,255,.2)}
-.alert-dot{width:8px;height:8px;border-radius:50%;background:#E8503A;display:none;animation:pulse 1.4s infinite}
+#main-app{display:none;min-height:100vh}
+#main-app.on{display:block}
+/* SIDEBAR */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--verde);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:200;transition:transform .25s ease;box-shadow:2px 0 16px rgba(0,0,0,.18);transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-brand-icon{width:30px;height:30px;flex-shrink:0}
+.nav-brand-text{font-size:13px;font-weight:800;color:#fff;font-family:'Nunito',sans-serif;letter-spacing:.01em;line-height:1.2}
+.nav-brand-text span{color:var(--dorado-borde);font-weight:400;font-size:10px;display:block}
+.sidebar-nav{flex:1;padding:10px 0;overflow-y:auto}
+.nav-tab{display:flex;align-items:center;gap:10px;padding:11px 18px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;user-select:none;font-weight:600;font-family:'Nunito',sans-serif;transition:background .15s,color .15s;border-left:3px solid transparent;white-space:nowrap}
+.nav-tab:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-tab.active{color:#fff;background:rgba(255,255,255,.12);border-left-color:var(--dorado-borde);font-weight:700}
+.nav-tab .tab-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:8px}
+.uchip{font-size:11px;color:rgba(255,255,255,.8);background:rgba(255,255,255,.1);padding:4px 10px;border-radius:99px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(255,255,255,.15);text-align:center}
+.app-content{margin-left:0;flex:1;display:flex;flex-direction:column;min-height:100vh}
+/* Overlay and topbar always present */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:199}
+.sidebar-overlay.on{display:block}
+.topbar{display:flex;background:var(--verde);padding:0 14px;height:50px;align-items:center;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.topbar-brand{font-size:13px;font-weight:800;color:#fff;font-family:'Nunito',sans-serif}
+.topbar-brand span{color:var(--dorado-borde);font-weight:400;font-size:10px;display:block;line-height:1}
+.hamburger{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:4px}
+.hamburger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px}
+.alert-dot{width:8px;height:8px;border-radius:50%;background:#E8503A;display:none;animation:pulse 1.4s infinite;flex-shrink:0}
 .alert-dot.on{display:inline-block}
+@media(max-width:700px){
+  .pg{padding:12px}
+}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
-.pg{display:none;padding:16px}.pg.on{display:block}
+.pg{display:none;padding:20px}.pg.on{display:block}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.nav-tab{padding:10px 5px;font-size:11px}}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
 .sc{background:var(--blanco);border-radius:10px;padding:12px 14px;border:2px solid var(--gris-borde)}
 .sl{font-size:11px;color:var(--gris-sub);margin-bottom:4px;display:block;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
 .sv{font-size:24px;font-weight:800;color:var(--gris-txt);display:block;font-family:'Nunito',sans-serif}
@@ -239,28 +256,38 @@ tr:hover td{background:var(--verde-claro)}
 </div>
 
 <div id="main-app">
-  <div class="nav">
-    <span class="nav-brand">
-      <svg class="nav-brand-icon" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="13" cy="13" r="13" fill="rgba(255,255,255,0.15)"/>
-        <ellipse cx="13" cy="15" rx="5.5" ry="7" fill="#F0D878" opacity=".95"/>
-        <ellipse cx="13" cy="12" rx="3.8" ry="5" fill="#fff" opacity=".18"/>
-        <circle cx="19" cy="7" r="2.2" fill="#F0D878" opacity=".7"/>
-        <path d="M17.5 6.5l1-2.2M19.5 6l2.2-.8M19.8 8l1.8 1.1" stroke="#F0D878" stroke-width=".9" stroke-linecap="round" opacity=".7"/>
-      </svg>
-      <div class="nav-brand-text">GSM Reportes<span>Granja San Miguel</span></div>
-    </span>
-    <span class="nav-tab active" data-tab="dashboard">Dashboard</span>
-    <span class="nav-tab" data-tab="activos">Activos</span>
-    <span class="nav-tab" data-tab="historial">Historial</span>
-    <span class="nav-tab" data-tab="estadisticas">Estadísticas</span>
-    <span class="nav-tab" id="tab-admin" data-tab="admin" style="display:none">⚙ Admin</span>
-    <span class="nav-tab" id="tab-tipos" data-tab="tipos" style="display:none">Tipos</span>
-    <div class="nav-right">
-      <span class="alert-dot" id="alert-dot"></span>
-      <span class="uchip" id="nav-user"></span>
-      <button class="ib sm" id="btn-logout">Salir</button>
-    </div>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <svg class="nav-brand-icon" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="13" cy="13" r="13" fill="rgba(255,255,255,0.15)"/>
+      <ellipse cx="13" cy="15" rx="5.5" ry="7" fill="#F0D878" opacity=".95"/>
+      <ellipse cx="13" cy="12" rx="3.8" ry="5" fill="#fff" opacity=".18"/>
+      <circle cx="19" cy="7" r="2.2" fill="#F0D878" opacity=".7"/>
+      <path d="M17.5 6.5l1-2.2M19.5 6l2.2-.8M19.8 8l1.8 1.1" stroke="#F0D878" stroke-width=".9" stroke-linecap="round" opacity=".7"/>
+    </svg>
+    <div class="nav-brand-text">GSM Reportes<span>Granja San Miguel</span></div>
+  </div>
+  <div class="sidebar-nav">
+    <span class="nav-tab active" data-tab="dashboard"><span class="tab-icon">📊</span>Dashboard</span>
+    <span class="nav-tab" data-tab="activos"><span class="tab-icon">🔴</span>Activos</span>
+    <span class="nav-tab" data-tab="historial"><span class="tab-icon">📋</span>Historial</span>
+    <span class="nav-tab" data-tab="estadisticas"><span class="tab-icon">📈</span>Estadísticas</span>
+    <span class="nav-tab" id="tab-tipos" data-tab="tipos" style="display:none"><span class="tab-icon">✏️</span>Tipos</span>
+    <span class="nav-tab" id="tab-admin" data-tab="admin" style="display:none"><span class="tab-icon">⚙️</span>Administración</span>
+  </div>
+  <div class="sidebar-footer">
+    <span class="uchip" id="nav-user"></span>
+    <span class="alert-dot" id="alert-dot" style="display:none;margin:0 auto"></span>
+    <button class="ib sm dan" id="btn-logout" style="width:100%;justify-content:center">Salir</button>
+  </div>
+</div>
+<div class="app-content">
+  <div class="topbar">
+    <button class="hamburger" onclick="openSidebar()"><span></span><span></span><span></span></button>
+    <div class="topbar-brand">GSM Reportes<span>Granja San Miguel</span></div>
+    <span class="alert-dot" id="alert-dot-top"></span>
+    <button class="ib sm pri" id="btn-nuevo-top" style="display:none;margin-left:auto">+ Nuevo</button>
   </div>
 
   <div class="pg on" id="pg-dashboard">
@@ -276,7 +303,7 @@ tr:hover td{background:var(--verde-claro)}
   <div class="pg" id="pg-activos">
     <div class="sh">
       <span class="stit">Reportes activos</span>
-      <button class="ib pri" id="btn-nuevo" style="display:none">+ Nuevo reporte</button>
+      <button class="ib pri" id="btn-nuevo">+ Nuevo reporte</button>
     </div>
     <div class="fbar">
       <input class="sinp" id="search-activos" placeholder="Buscar..."/>
@@ -373,7 +400,8 @@ tr:hover td{background:var(--verde-claro)}
       <div class="mok" id="del-ok" style="margin-top:10px"></div>
     </div>
   </div>
-</div>
+</div><!-- end app-content -->
+</div><!-- end main-app -->
 
 <!-- MODAL: NUEVO REPORTE -->
 <div class="mbg" id="mbg-nuevo">
@@ -436,7 +464,7 @@ tr:hover td{background:var(--verde-claro)}
     <div class="info-box">El código puede usarse múltiples veces. Todos los que lo usen quedarán asignados al mismo sector y rol.</div>
     <div class="mfg"><label class="mfl">Código *</label><input id="inv-code" placeholder="Ej: MANT-2026"/><span class="mhint">Solo letras, números y guiones. Se guarda en mayúsculas.</span></div>
     <div class="mfg"><label class="mfl">Sector asignado *</label><select id="inv-sector"><option value="">— Seleccioná —</option></select></div>
-    <div class="mfg"><label class="mfl">Rol asignado *</label><select id="inv-role"><option value="encargado">Encargado</option><option value="gerencia">Gerencia</option><option value="admin">Admin</option></select></div>
+    <div class="mfg"><label class="mfl">Rol asignado *</label><select id="inv-role"><option value="encargado">Encargado</option><option value="enc-clasif">Encargado de Clasificación</option><option value="gerencia">Gerencia</option><option value="admin">Admin</option></select></div>
     <div class="mfg"><label class="mfl">Descripción (opcional)</label><input id="inv-desc" placeholder="Ej: Para el equipo de mantenimiento"/></div>
     <div class="merr" id="inv-err"></div>
     <div class="mok" id="inv-ok"></div>
@@ -451,9 +479,9 @@ tr:hover td{background:var(--verde-claro)}
 (function(){
 'use strict';
 var FB_CONFIG={apiKey:"AIzaSyBGfJdtWUQuyyBuym_KLHOqooJZqyEaKa4",authDomain:"reportes-gsm.firebaseapp.com",databaseURL:"https://reportes-gsm-default-rtdb.firebaseio.com",projectId:"reportes-gsm",storageBucket:"reportes-gsm.firebasestorage.app",messagingSenderId:"395219824140",appId:"1:395219824140:web:687f135e1d601cba0b4829"};
-var SECTORS={'planta-alimento':'Planta de Alimento Balanceado','naves-postura':'Naves de Postura','naves-recria':'Naves de Recría','deposito-clasif':'Depósito de Clasificación','mantenimiento':'Mantenimiento','planta-hlp':'Planta HLP','adm-compras':'Administración Compras','adm-ventas':'Administración Ventas','sucursales':'Sucursales','ger-mantenimiento':'Gerencia de Mantenimiento','ger-produccion':'Gerencia de Producción','ger-administrativa':'Gerencia Administrativa'};
-var GERENCIA_SCOPE={'ger-mantenimiento':['planta-alimento','naves-postura','naves-recria','deposito-clasif','mantenimiento','planta-hlp'],'ger-produccion':['naves-postura','naves-recria','deposito-clasif','planta-hlp','planta-alimento'],'ger-administrativa':['adm-compras','adm-ventas','sucursales']};
-var PROBLEM_TYPES={'planta-alimento':['Documentación incorrecta del proveedor','Cereal fuera de estándar','Faltante de materia prima','Fórmula de alimento errónea','Falla en maquinaria','Falla en sistema Scada','Silo o sinfín con falla','Orden y limpieza','Otro'],'naves-postura':['Cambio de conducta en aves','Mortalidad elevada','Falta de agua','Falla de iluminación o ventilación','Falta de alimento en silos','Desperfecto en maquinaria','Falta de insumos','Otro'],'naves-recria':['Cambio de conducta en pollitas','Temperatura fuera de rango','Mortalidad elevada','Falta de agua o luz','Falta de alimento en silos','Desperfecto en maquinaria','Falta de insumos','Otro'],'deposito-clasif':['Huevos sucios/rotos en exceso','Nave sin enviar huevos','Mal funcionamiento de la clasificadora','Cambios en pedidos por falta de huevos','Falta de insumos','Error en envío de insumos','Desperfecto en maquinaria','Falta de personal','Otro'],'mantenimiento':['Rotura de maquinaria','Falta de repuesto crítico','Problema en proceso de guano','Falta de herramientas','Necesidad de empresa externa','Otro'],'planta-hlp':['Huevos recibidos en mal estado','Desperfecto o rotura de maquinaria','Falta de insumos','Anomalía en producto elaborado','Otro'],'adm-compras':['Pedido de compra inusual','Anomalía en documentación de proveedor','Error en cuenta corriente','Demora en llegada de insumo','Faltante de stock','Otro'],'adm-ventas':['Cliente no paga en tiempo y forma','Cliente disminuye o deja de pedir','Camión roto o transporte no disponible','Falta de chofer','Tendencia negativa en estadísticas','Otro'],'sucursales':['Baja en ventas','Artículos faltantes en entrega','Queja o impago de cliente','Falla de maquinaria','Falta de insumos','Proveedor reclama pago','Problema de personal','Otro'],'ger-mantenimiento':['Falla crítica sin resolución','Repuesto no disponible','Acumulación de solicitudes','Otro'],'ger-produccion':['Brote sanitario','Caída en postura','Problema con fórmula','Calidad de huevo baja','Otro'],'ger-administrativa':['Baja sostenida en ventas','Cambio impositivo o legal','Conflicto en sucursal','Exceso de pedidos','Otro']};
+var SECTORS={'planta-alimento':'Planta de Alimento Balanceado','naves-postura':'Naves de Postura','naves-recria':'Naves de Recría','deposito-clasif':'Depósito de Clasificación','enc-clasif':'Encargado de Clasificación','mantenimiento':'Mantenimiento','planta-hlp':'Planta HLP','adm-compras':'Administración Compras','adm-ventas':'Administración Ventas','sucursales':'Sucursales','ger-mantenimiento':'Gerencia de Mantenimiento','ger-produccion':'Gerencia de Producción','ger-administrativa':'Gerencia Administrativa'};
+var GERENCIA_SCOPE={'ger-mantenimiento':['planta-alimento','naves-postura','naves-recria','deposito-clasif','mantenimiento','planta-hlp'],'ger-produccion':['naves-postura','naves-recria','deposito-clasif','enc-clasif','planta-hlp','planta-alimento'],'ger-administrativa':['adm-compras','adm-ventas','sucursales']};
+var PROBLEM_TYPES={'planta-alimento':['Documentación incorrecta del proveedor','Cereal fuera de estándar','Faltante de materia prima','Fórmula de alimento errónea','Falla en maquinaria','Falla en sistema Scada','Silo o sinfín con falla','Orden y limpieza','Otro'],'naves-postura':['Cambio de conducta en aves','Mortalidad elevada','Falta de agua','Falla de iluminación o ventilación','Falta de alimento en silos','Desperfecto en maquinaria','Falta de insumos','Otro'],'naves-recria':['Cambio de conducta en pollitas','Temperatura fuera de rango','Mortalidad elevada','Falta de agua o luz','Falta de alimento en silos','Desperfecto en maquinaria','Falta de insumos','Otro'],'deposito-clasif':['Huevos sucios/rotos en exceso','Nave sin enviar huevos','Mal funcionamiento de la clasificadora','Cambios en pedidos por falta de huevos','Falta de insumos','Error en envío de insumos','Desperfecto en maquinaria','Falta de personal','Otro'],'enc-clasif':['Huevos sucios/rotos en exceso','Nave sin enviar huevos','Mal funcionamiento de la clasificadora','Cambios en pedidos por falta de huevos','Falta de insumos','Error en envío de insumos','Desperfecto en maquinaria','Falta de personal','Otro'],'mantenimiento':['Rotura de maquinaria','Falta de repuesto crítico','Problema en proceso de guano','Falta de herramientas','Necesidad de empresa externa','Otro'],'planta-hlp':['Huevos recibidos en mal estado','Desperfecto o rotura de maquinaria','Falta de insumos','Anomalía en producto elaborado','Otro'],'adm-compras':['Pedido de compra inusual','Anomalía en documentación de proveedor','Error en cuenta corriente','Demora en llegada de insumo','Faltante de stock','Otro'],'adm-ventas':['Cliente no paga en tiempo y forma','Cliente disminuye o deja de pedir','Camión roto o transporte no disponible','Falta de chofer','Tendencia negativa en estadísticas','Otro'],'sucursales':['Baja en ventas','Artículos faltantes en entrega','Queja o impago de cliente','Falla de maquinaria','Falta de insumos','Proveedor reclama pago','Problema de personal','Otro'],'ger-mantenimiento':['Falla crítica sin resolución','Repuesto no disponible','Acumulación de solicitudes','Otro'],'ger-produccion':['Brote sanitario','Caída en postura','Problema con fórmula','Calidad de huevo baja','Otro'],'ger-administrativa':['Baja sostenida en ventas','Cambio impositivo o legal','Conflicto en sucursal','Exceso de pedidos','Otro']};
 var PLAZO_CFG={inmediato:{label:'Inmediato',horas:0,urgencia:'alta',color:'#B03030',hint:'Requiere atención ahora mismo.'},en_el_dia:{label:'En el día',horas:8,urgencia:'alta',color:'#B03030',hint:'Resolver antes de que termine el turno.'},'24_48hs':{label:'24 a 48 hs',horas:48,urgencia:'media',color:'#9A6800',hint:'Urgencia media — resolver en los próximos 2 días.'},semana:{label:'Hasta una semana',horas:168,urgencia:'baja',color:'#1E6640',hint:'Baja urgencia — resolver en los próximos 7 días.'}};
 var ESCALA_A={baja:'media',media:'alta'};
 function getDirigidoArray(r){
@@ -486,9 +514,9 @@ G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.val
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value.trim();var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';var newProfile=null;fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){newProfile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(newProfile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';// Si el usuario ya fue logueado automáticamente por Firebase, forzar onLoggedIn con el perfil correcto
 if(fbAuth.currentUser&&newProfile){currentProfile=newProfile;currentProfile.uid=fbAuth.currentUser.uid;onLoggedIn();}}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';if(e.code==='auth/weak-password')msg='La contrasena debe tener al menos 6 caracteres.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
 G('btn-logout').onclick=function(){fbAuth.signOut();};
-function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';G('btn-nuevo').style.display='inline-flex';if(p.role==='admin')G('tab-admin').style.display='block';if(p.role==='admin'||p.role==='gerencia')G('tab-tipos').style.display='block';loadCustomTypes();subscribeReports();showScreen('app');renderPage('dashboard');
+function onLoggedIn(){var p=currentProfile;G('nav-user').textContent=p.name||p.email||'Usuario';if(p.role==='admin'){G('tab-admin').style.display='flex';}if(p.role==='admin'||p.role==='gerencia'){G('tab-tipos').style.display='flex';}loadCustomTypes();subscribeReports();showScreen('app');renderPage('dashboard');
   initFCM(p.uid||'');}
-function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}var p=currentProfile;reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});if(p.role==='encargado'){// Encargado ve: reportes de su propio sector + reportes dirigidos a su sector
+function subscribeReports(){if(reportsListener&&reportsRef){reportsRef.off('value',reportsListener);reportsListener=null;}var p=currentProfile;reportsRef=fbDb.ref('reports');reportsListener=reportsRef.on('value',function(snap){var data=snap.val()||{};var list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});if(p.role==='encargado'||p.role==='enc-clasif'){// Encargado ve: reportes de su propio sector + reportes dirigidos a su sector
 list=list.filter(function(r){if(r.sector===p.sector)return true;var dirs=getDirigidoArray(r);return dirs.indexOf(p.sector)>=0;});}else if(p.role==='gerencia'){var scope=GERENCIA_SCOPE[p.sector]||[];// Gerencia ve: reportes de sectores bajo su scope + cualquier reporte dirigido a su sector
 list=list.filter(function(r){if(scope.indexOf(r.sector)>=0)return true;var dirs=getDirigidoArray(r);return dirs.indexOf(p.sector)>=0;});}list.sort(function(a,b){return(b.createdAt||0)-(a.createdAt||0);});checkNewReports(list);allReports=list;renderAll();});}
 function createReport(data,cb){var id=uid();var report=Object.assign({},data,{id:id,status:'abierto',escalated:false,createdAt:Date.now(),updatedAt:Date.now(),timeline:[],closedAt:null,closedBy:null,resolution:null,justificacion:null});fbDb.ref('reports/'+id).set(report).then(function(){cb(null);}).catch(cb);}
@@ -498,7 +526,9 @@ function escalateReport(reportId,reason,cb){var r=allReports.find(function(x){re
 function deleteTimelineEntry(reportId,index,cb){var r=allReports.find(function(x){return x.id===reportId;});if(!r)return;var tl=(r.timeline||[]).filter(function(_,i){return i!==index;});fbDb.ref('reports/'+reportId+'/timeline').set(tl).then(function(){cb(null);}).catch(cb);}
 function deleteReport(reportId,cb){fbDb.ref('reports/'+reportId).remove().then(function(){cb(null);}).catch(cb);}
 function renderAll(){updateTitle();renderDashboard();renderActivos();renderHistorial();refreshDetalleIfOpen();}
-function updateTitle(){var n=allReports.filter(function(r){return r.urgency==='alta'&&r.status!=='resuelto';}).length;document.title=n>0?'('+n+' ALTA) Reportes GSM':'Reportes GSM';G('alert-dot').classList.toggle('on',n>0);}
+function updateTitle(){var n=allReports.filter(function(r){return r.urgency==='alta'&&r.status!=='resuelto';}).length;document.title=n>0?'('+n+' ALTA) Reportes GSM':'Reportes GSM';G('alert-dot').classList.toggle('on',n>0);var top=G('alert-dot-top');if(top)top.classList.toggle('on',n>0);}
+window.openSidebar=function(){G('sidebar').classList.add('open');G('sidebar-overlay').classList.add('on');};
+window.closeSidebar=function(){G('sidebar').classList.remove('open');G('sidebar-overlay').classList.remove('on');};
 function renderDashboard(){var active=allReports.filter(function(r){return r.status!=='resuelto';});var alta=active.filter(function(r){return r.urgency==='alta';});var media=active.filter(function(r){return r.urgency==='media';});var baja=active.filter(function(r){return r.urgency==='baja';});var res=allReports.filter(function(r){return r.status==='resuelto';});G('cnt-alta').textContent=alta.length;G('cnt-media').textContent=media.length;G('cnt-baja').textContent=baja.length;G('cnt-resueltos').textContent=res.length;var html='';if(alta.length)html+='<div class="urgency-section"><div class="urgency-header uh-alta">Urgencia Alta</div><div class="report-list">'+alta.map(renderCard).join('')+'</div></div>';if(media.length)html+='<div class="urgency-section"><div class="urgency-header uh-media">Urgencia Media</div><div class="report-list">'+media.map(renderCard).join('')+'</div></div>';if(baja.length)html+='<div class="urgency-section"><div class="urgency-header uh-baja">Urgencia Baja</div><div class="report-list">'+baja.map(renderCard).join('')+'</div></div>';if(!active.length)html='<div class="empty"><div class="empty-icon">ok</div><div class="empty-title">Sin reportes activos</div><div>Todo esta en orden.</div></div>';G('dash-list').innerHTML=html;bindCards(G('dash-list'));}
 function renderActivos(){var q=(G('search-activos').value||'').toLowerCase().trim();var list=allReports.filter(function(r){if(r.status==='resuelto')return false;if(filterActivos!=='all'&&r.urgency!==filterActivos)return false;if(filterDirigido){var dirs=getDirigidoArray(r);if(dirs.indexOf(filterDirigido)<0)return false;}if(q)return matchSearch(r,q);return true;});renderList(G('list-activos'),list);}
 function renderHistorial(){var q=(G('search-hist').value||'').toLowerCase().trim();var list=allReports.filter(function(r){if(filterHist!=='all'&&r.status!==filterHist)return false;if(q)return matchSearch(r,q);return true;});renderList(G('list-hist'),list);}
@@ -511,7 +541,7 @@ function refreshDetalleIfOpen(){if(!G('mbg-detalle').classList.contains('on')||!
 function renderDetalle(r){var isResolved=r.status==='resuelto';var isAdm=currentProfile.role==='admin';var p=currentProfile;var dirs=getDirigidoArray(r);var canManage=isAdm||(r.encargadoUid&&r.encargadoUid===p.uid)||(dirs.length&&dirs.indexOf(p.sector)>=0);var canEsc=r.urgency!=='alta'&&!isResolved&&canManage;var tl=r.timeline||[];var tlHtml=tl.length?tl.map(function(e,i){var isLast=i===tl.length-1;var delBtn=isAdm?'<button class="ib dan sm" style="padding:2px 8px;font-size:11px;margin-top:4px" onclick="confirmDeleteEntry(\''+r.id+'\','+i+')">Eliminar</button>':'';return'<div class="tl-item"><div class="tl-line"><div class="tl-dot '+(e.authorRole==='sistema'?'sys':'')+'"></div>'+(!isLast?'<div class="tl-conn"></div>':'')+'</div><div class="tl-body"><div class="tl-author">'+esc(e.authorName)+(e.authorRole&&e.authorRole!=='sistema'?' - '+e.authorRole:'')+'</div><div class="tl-text">'+esc(e.text)+'</div><div class="tl-time">'+fmtFull(e.timestamp)+'</div>'+delBtn+'</div></div>';}).join(''):'<p style="font-size:12px;color:#B0A0CC;padding:8px 0">Sin actualizaciones todavia.</p>';var html='<div style="display:flex;gap:6px;flex-wrap:wrap">'+badgeU(r.urgency)+badgeS(r.status)+(r.escalated?'<span class="badge b-escalado">Escalado</span>':'');if(r.plazo){var pcfg=getPlazoInfo(r.plazo);html+='<span class="badge" style="background:'+pcfg.color+'20;color:'+pcfg.color+';">'+pcfg.label+'</span>';}html+='</div><div><div style="font-size:16px;font-weight:700;color:#2D1F5E;margin-bottom:6px">'+esc(r.problemType)+'</div><div style="font-size:12px;color:#B0A0CC;display:flex;gap:14px;flex-wrap:wrap"><span>Sector: '+esc(r.sectorLabel||r.sector)+'</span><span>Detecto: <strong style="color:#7A6A9E">'+esc(r.operarioName)+'</strong></span><span>Cargado: <strong style="color:#7A6A9E">'+fmtFull(r.createdAt)+'</strong></span></div></div>';if(dirs.length){html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+dirs.map(function(d){return '<span class="badge" style="background:#F0EBF8;color:#7C5CBF;border:1px solid #C8B8EE">Para: '+(SECTORS[d]||d)+'</span>';}).join('')+'</div>';}html+=plazoCountdown(r)+'<div class="divider"></div><div><div class="section-lbl">Descripcion</div><p style="font-size:13px;color:#7A6A9E;line-height:1.6">'+esc(r.description)+'</p></div><div class="divider"></div><div><div class="section-lbl">Historial</div><div class="timeline">'+tlHtml+'</div></div>';if(!isResolved){html+='<div class="divider"></div><div><div class="section-lbl">Cargar comentario</div><div class="mfg" style="margin-bottom:8px"><textarea id="upd-text" rows="3" placeholder="Escribi tu comentario o novedad..."></textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+(canManage?'<select id="upd-status" style="flex:1;min-width:160px"><option value="">Sin cambio de estado</option><option value="en_proceso">Cambiar a: En proceso</option><option value="abierto">Cambiar a: Abierto</option></select>':'<input type="hidden" id="upd-status" value="">')+'<button class="ib pri sm" id="btn-upd-submit">Guardar</button></div><div class="merr" id="upd-err" style="margin-top:8px"></div></div>';if(canEsc&&canManage){html+='<div><button class="ib warn sm" id="btn-show-esc" style="margin-top:4px">Escalar urgencia</button><div id="esc-form" style="display:none;margin-top:8px" class="escalate-box"><div class="escalate-box-title">Escalar a '+(ESCALA_A[r.urgency]||'alta').toUpperCase()+'</div><textarea id="esc-reason" rows="2" placeholder="Motivo (requerido)..."></textarea><div style="display:flex;gap:8px"><button class="ib dan sm" id="btn-esc-confirm">Confirmar</button><button class="ib sm" id="btn-esc-cancel">Cancelar</button></div><div class="merr" id="esc-err"></div></div></div>';}if(canManage){html+='<div style="margin-top:4px"><button class="ib grn sm" id="btn-show-close">Cerrar reporte</button><div id="close-form" style="display:none;margin-top:8px" class="close-box"><div class="close-box-title">Reporte de cierre</div><div class="mfg"><label class="mfl">Resolucion *</label><textarea id="close-resol" rows="3" placeholder="Como se resolvio el problema..."></textarea></div><div class="mfg"><label class="mfl">Justificacion de demora (si aplica)</label><textarea id="close-just" rows="2" placeholder="Si se superaron los plazos..."></textarea></div><div style="display:flex;gap:8px"><button class="ib grn sm" id="btn-close-confirm">Confirmar cierre</button><button class="ib sm" id="btn-close-cancel">Cancelar</button></div><div class="merr" id="close-err"></div></div></div>';}}if(isResolved&&r.resolution){html+='<div class="divider"></div><div class="close-box"><div class="close-box-title">Cerrado por '+esc(r.closedBy||'')+'</div><p style="font-size:13px;color:#2D1F5E;line-height:1.5;margin-top:6px">'+esc(r.resolution)+'</p>'+(r.justificacion?'<p style="font-size:12px;color:#7A5500;margin-top:8px;font-style:italic">Justificacion: '+esc(r.justificacion)+'</p>':'')+'</div>';}if(isAdm){html+='<div class="divider"></div><div style="background:#FDEAEA;border:2px solid #F0B0B0;border-radius:10px;padding:14px"><div style="font-size:12px;font-weight:700;color:#8B2E2E;margin-bottom:8px">Zona de peligro - solo admin</div><button class="ib dan sm" id="btn-del-report">Eliminar reporte completo</button></div>';}G('detalle-body').innerHTML=html;if(isAdm){var delBtn=G('btn-del-report');if(delBtn)delBtn.onclick=function(){if(!confirm('Eliminar este reporte? Esta accion no se puede deshacer.'))return;if(!confirm('Confirmacion final: seguro que queres eliminar este reporte?'))return;delBtn.disabled=true;deleteReport(r.id,function(e){if(e){alert('Error al eliminar.');delBtn.disabled=false;}else closeModal('mbg-detalle');});};}if(!isResolved){G('btn-upd-submit').onclick=function(){var text=G('upd-text').value.trim(),status=G('upd-status').value,err=G('upd-err');err.classList.remove('on');if(!text){err.textContent='Escribi una actualizacion.';err.classList.add('on');return;}G('btn-upd-submit').disabled=true;var entry={authorName:currentProfile.name||currentProfile.email||'Usuario',authorRole:currentProfile.role||'encargado',text:text,timestamp:Date.now()};addUpdate(r.id,entry,status||null,function(e){G('btn-upd-submit').disabled=false;if(e){err.textContent='Error al guardar.';err.classList.add('on');}else{G('upd-text').value='';G('upd-status').value='';}});};if(canEsc){G('btn-show-esc').onclick=function(){G('esc-form').style.display='block';G('btn-show-esc').style.display='none';};G('btn-esc-cancel').onclick=function(){G('esc-form').style.display='none';G('btn-show-esc').style.display='inline-flex';};G('btn-esc-confirm').onclick=function(){var reason=G('esc-reason').value.trim(),err=G('esc-err');err.classList.remove('on');if(!reason){err.textContent='Explica el motivo.';err.classList.add('on');return;}G('btn-esc-confirm').disabled=true;escalateReport(r.id,reason,function(e){G('btn-esc-confirm').disabled=false;if(e){err.textContent='Error.';err.classList.add('on');}});};}G('btn-show-close').onclick=function(){G('close-form').style.display='block';G('btn-show-close').style.display='none';};G('btn-close-cancel').onclick=function(){G('close-form').style.display='none';G('btn-show-close').style.display='inline-flex';};G('btn-close-confirm').onclick=function(){var resol=G('close-resol').value.trim(),just=G('close-just').value.trim(),err=G('close-err');err.classList.remove('on');if(!resol){err.textContent='Completa la resolucion.';err.classList.add('on');return;}G('btn-close-confirm').disabled=true;closeReport(r.id,resol,just,function(e){G('btn-close-confirm').disabled=false;if(e){err.textContent='Error.';err.classList.add('on');}else closeModal('mbg-detalle');});};}}
 G('btn-nuevo').onclick=function(){var p=currentProfile;var sectorSel=G('nr-sector-sel'),sectorInp=G('nr-sector');sectorInp.style.display='none';if(sectorSel){sectorSel.style.display='block';sectorSel.value=p.sector||'';if(p.sector)loadTipos(p.sector);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';}G('nr-operario').value='';G('nr-desc').value='';document.querySelectorAll('input[name="nr-dirigido"]').forEach(function(cb){cb.checked=false;});G('nr-plazo').value='en_el_dia';var hint=G('nr-plazo-hint');if(hint){var cfg=getPlazoInfo('en_el_dia');hint.textContent=cfg.hint;hint.style.color=cfg.color;}G('nr-err').classList.remove('on');G('mbg-nuevo').classList.add('on');setTimeout(function(){G('nr-operario').focus();},100);};
 function loadTipos(sector){var tipos=PROBLEM_TYPES[sector]||['Otro'],sel=G('nr-tipo');sel.innerHTML='<option value="">Selecciona</option>';tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
-var DIRIGIDO_SECTORS=['adm-compras','adm-ventas','ger-mantenimiento','ger-produccion','ger-administrativa'];
+var DIRIGIDO_SECTORS=['adm-compras','adm-ventas','enc-clasif','ger-mantenimiento','ger-produccion','ger-administrativa'];
 (function(){var container=G('nr-dirigido-checks');if(!container)return;DIRIGIDO_SECTORS.forEach(function(k){var lbl=document.createElement('label');lbl.style.cssText='display:flex;align-items:center;gap:6px;font-size:13px;color:#2D1F5E;cursor:pointer;padding:4px 8px;border:2px solid #D8CAF0;border-radius:8px;background:#fff';var cb=document.createElement('input');cb.type='checkbox';cb.value=k;cb.name='nr-dirigido';cb.style.cssText='accent-color:#9B7FD4;width:16px;height:16px;cursor:pointer';lbl.appendChild(cb);lbl.appendChild(document.createTextNode(SECTORS[k]));container.appendChild(lbl);});})();
 (function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Selecciona un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';};})();
 G('nr-plazo').onchange=function(){var cfg=getPlazoInfo(this.value);var hint=G('nr-plazo-hint');if(hint){hint.textContent=cfg.hint;hint.style.color=cfg.color;}};
@@ -607,7 +637,8 @@ G('inv-code').oninput=function(){this.value=this.value.toUpperCase();};
 G('btn-inv-submit').onclick=function(){var code=G('inv-code').value.trim().toUpperCase(),sector=G('inv-sector').value,role=G('inv-role').value,desc=G('inv-desc').value.trim();var err=G('inv-err'),ok=G('inv-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!sector){err.textContent='Completa el codigo y el sector.';err.classList.add('on');return;}if(!/^[A-Z0-9-]+$/.test(code)){err.textContent='Solo letras, numeros y guiones.';err.classList.add('on');return;}G('btn-inv-submit').disabled=true;G('btn-inv-submit').innerHTML='<span class="spin"></span> Creando...';var invData={sector:sector,role:role,active:true,usageCount:0,createdAt:Date.now(),createdBy:currentProfile.name||currentProfile.email||'Admin'};if(desc)invData.description=desc;fbDb.ref('invitaciones/'+code).set(invData).then(function(){ok.textContent='Codigo "'+code+'" creado correctamente.';ok.classList.add('on');G('btn-inv-submit').disabled=false;G('btn-inv-submit').textContent='Crear codigo';loadInvitations();}).catch(function(e){err.textContent='Error al crear el codigo: '+(e.message||'');err.classList.add('on');G('btn-inv-submit').disabled=false;G('btn-inv-submit').textContent='Crear codigo';});};
 var pages={dashboard:'pg-dashboard',activos:'pg-activos',historial:'pg-historial',estadisticas:'pg-estadisticas',admin:'pg-admin',tipos:'pg-tipos'};
 function renderPage(name){Object.values(pages).forEach(function(id){var el=G(id);if(el)el.classList.remove('on');});document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});var pg=G(pages[name]);if(pg)pg.classList.add('on');var tab=document.querySelector('.nav-tab[data-tab="'+name+'"]');if(tab)tab.classList.add('active');if(name==='admin')loadAdminData();if(name==='estadisticas')initStatPage();}
-document.querySelectorAll('.nav-tab').forEach(function(t){t.onclick=function(){renderPage(t.dataset.tab);};});
+document.querySelectorAll('.nav-tab').forEach(function(t){t.onclick=function(){renderPage(t.dataset.tab);closeSidebar();};});
+if(G('btn-nuevo-top'))G('btn-nuevo-top').onclick=function(){G('btn-nuevo').click();};
 document.querySelectorAll('.fchip[data-u]').forEach(function(c){c.onclick=function(){filterActivos=c.dataset.u;document.querySelectorAll('.fchip[data-u]').forEach(function(x){x.classList.remove('active');});c.classList.add('active');renderActivos();};});
 G('search-activos').oninput=function(){renderActivos();};
 document.querySelectorAll('.fchip[data-h]').forEach(function(c){c.onclick=function(){filterHist=c.dataset.h;document.querySelectorAll('.fchip[data-h]').forEach(function(x){x.classList.remove('active');});c.classList.add('active');renderHistorial();};});
