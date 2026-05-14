@@ -309,6 +309,37 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
 }
 .topbar-iconbtn.has-alert .alert-dot-mini{display:block}
 
+/* Egg-cracked notification button (variant D) */
+.egg-btn{color:var(--txt2)}
+.egg-btn .egg-shake{
+  position:relative;width:18px;height:18px;display:inline-block;
+}
+.egg-btn.opening .egg-shake{animation:egg-wobble .38s ease-in-out}
+@keyframes egg-wobble{
+  0%{transform:rotate(0)}
+  25%{transform:rotate(-8deg)}
+  50%{transform:rotate(7deg)}
+  75%{transform:rotate(-3deg)}
+  100%{transform:rotate(0)}
+}
+.egg-half{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  transition:transform .35s cubic-bezier(.3,.7,.4,1.4);
+  transform-origin:50% 50%;
+}
+.egg-btn.opening .egg-top,
+.topbar-iconbtn:has(+ .notif-panel.on) .egg-top{
+  /* fallback: even without :has, .opening drives it */
+}
+.egg-btn.opening .egg-top{
+  transform:translateY(-3px) rotate(-10deg);
+  transform-origin:10% 90%;
+}
+.egg-btn.opening .egg-bot{
+  transform:translateY(2px) translateX(1px) rotate(3deg);
+  transform-origin:90% 10%;
+}
+
 /* Notification panel */
 .bell-wrap{position:relative}
 .notif-panel{
@@ -320,7 +351,8 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   max-height:min(560px,80vh);overflow:hidden;
   z-index:300;
 }
-.notif-panel.on{display:flex}
+.notif-panel.on{display:flex;animation:notifPop .5s cubic-bezier(.2,1.5,.4,1) .15s backwards}
+@keyframes notifPop{from{opacity:0;transform:translateY(-12px) scale(.6);transform-origin:top center}to{opacity:1;transform:translateY(0) scale(1)}}
 .notif-panel::before{
   content:"";position:absolute;top:-6px;right:14px;
   width:12px;height:12px;background:var(--bg2);
@@ -601,6 +633,32 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
   text-transform:uppercase;font-weight:700;
 }
 .chat-userlist-hint{font-size:11px;color:var(--txt3);font-style:italic}
+
+/* New chat modal list */
+.new-chat-list{
+  display:flex;flex-direction:column;gap:2px;
+  max-height:360px;overflow-y:auto;
+  margin:0 -6px;padding:0 6px;
+}
+.new-chat-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  border:1px solid transparent;transition:background .12s, border-color .12s;
+}
+.new-chat-item:hover{background:var(--bg3);border-color:var(--border)}
+.new-chat-item .avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border);
+  color:var(--txt2);display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;flex-shrink:0;
+}
+.new-chat-item .body{flex:1;min-width:0}
+.new-chat-item .name{font-size:13.5px;font-weight:600;color:var(--txt);letter-spacing:-.005em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.new-chat-item .meta{font-size:11.5px;color:var(--txt3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.new-chat-item .chev{color:var(--txt3);flex-shrink:0}
+.new-chat-item:hover .chev{color:var(--peach-2)}
+.new-chat-empty{padding:30px 16px;text-align:center;color:var(--txt3);font-size:13px}
+.new-chat-empty .empty-icon{font-size:32px;opacity:.4;margin-bottom:6px}
 .chat-user{
   display:flex;align-items:center;gap:10px;
   padding:10px;cursor:pointer;border-radius:10px;
@@ -853,13 +911,9 @@ tr:hover td{background:var(--bg3)}
   <div class="center-wrap">
     <div class="card-box">
       <div class="logo-wrap">
-        <svg class="logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="19" cy="19" r="19" fill="#1A4A2E"/>
-          <ellipse cx="19" cy="21" rx="8" ry="10" fill="#F0D878" opacity=".95"/>
-          <ellipse cx="19" cy="17" rx="5.5" ry="7" fill="#fff" opacity=".2"/>
-          <path d="M10 19c0-2.5 1.2-5.5 4-7.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".4"/>
-          <circle cx="27" cy="11" r="3" fill="#F0D878" opacity=".7"/>
-          <path d="M25 10l1.5-3M28 9.5l3-1M28.5 12l2.5 1.5" stroke="#F0D878" stroke-width="1" stroke-linecap="round" opacity=".6"/>
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="20" cy="22" rx="14" ry="12" fill="#F5F0E1" stroke="#26341F" stroke-width="2"/>
+          <ellipse cx="20" cy="20" rx="5.5" ry="5" fill="#D78460"/>
         </svg>
         <div class="logo">Granja San Miguel</div>
       </div>
@@ -903,6 +957,7 @@ tr:hover td{background:var(--bg3)}
     <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M14 4 20 10 8 22H2v-6L14 4Z"/><path d="M13 5l6 6"/></symbol>
     <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
     <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-cracked-egg" viewBox="0 0 24 24"><path d="M12 2.5c-3.6 0-7 5-7 11.5a7 7 0 0 0 14 0c0-6.5-3.4-11.5-7-11.5Z"/><path d="M5.5 13 L8 12.2 L10 13.2 L12 12.3 L14 13.2 L16 12.2 L18.5 13"/></symbol>
     <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
@@ -960,11 +1015,9 @@ tr:hover td{background:var(--bg3)}
     </button>
     <div class="topbar-left">
       <div class="topbar-brand">
-        <svg class="topbar-brand-mark" viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="0" y="0" width="34" height="34" rx="9" fill="#26341F"/>
-          <ellipse cx="17" cy="20" rx="6.5" ry="8" fill="#D78460" opacity=".95"/>
-          <ellipse cx="17" cy="17" rx="4.5" ry="6" fill="#FFFFFF" opacity=".22"/>
-          <circle cx="24.5" cy="9.5" r="2.6" fill="#D78460" opacity=".85"/>
+        <svg class="topbar-brand-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="20" cy="22" rx="14" ry="12" fill="#F5F0E1" stroke="#26341F" stroke-width="2"/>
+          <ellipse cx="20" cy="20" rx="5.5" ry="5" fill="#D78460"/>
         </svg>
         <div class="topbar-brand-text">
           <div class="topbar-brand-name">Granja San Miguel</div>
@@ -982,8 +1035,21 @@ tr:hover td{background:var(--bg3)}
         <svg class="icn sm" style="stroke:#fff"><use href="#i-plus"/></svg>Nuevo
       </button>
       <div class="bell-wrap">
-        <button class="topbar-iconbtn" id="topbar-bell" title="Notificaciones">
-          <svg class="icn"><use href="#i-bell"/></svg>
+        <button class="topbar-iconbtn egg-btn" id="topbar-bell" title="Notificaciones">
+          <span class="egg-shake">
+            <svg class="egg-half egg-top" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <g style="clip-path:inset(0 0 53% 0)">
+                <path d="M12 2.5c-3.6 0-7 5-7 11.5a7 7 0 0 0 14 0c0-6.5-3.4-11.5-7-11.5Z"/>
+                <path d="M5.5 13 L8 12.2 L10 13.2 L12 12.3 L14 13.2 L16 12.2 L18.5 13"/>
+              </g>
+            </svg>
+            <svg class="egg-half egg-bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <g style="clip-path:inset(47% 0 0 0)">
+                <path d="M12 2.5c-3.6 0-7 5-7 11.5a7 7 0 0 0 14 0c0-6.5-3.4-11.5-7-11.5Z"/>
+                <path d="M5.5 13 L8 12.2 L10 13.2 L12 12.3 L14 13.2 L16 12.2 L18.5 13"/>
+              </g>
+            </svg>
+          </span>
           <span class="alert-dot-mini" id="alert-dot"></span>
         </button>
         <div class="notif-panel" id="notif-panel">
@@ -1176,6 +1242,24 @@ tr:hover td{background:var(--bg3)}
   </div>
 </div><!-- end app-content -->
 </div><!-- end main-app -->
+
+<!-- MODAL: NUEVO CHAT -->
+<div class="mbg" id="mbg-new-chat">
+<div class="modal" style="max-width:480px">
+  <div class="mhead">
+    <span class="mtit">Nuevo chat</span>
+    <button class="ib sm" onclick="closeModal('mbg-new-chat')">&#x2715;</button>
+  </div>
+  <div class="mbody" style="padding-bottom:8px">
+    <div class="mfg">
+      <label class="mfl">Buscar persona</label>
+      <input type="text" id="new-chat-search" placeholder="Nombre, email, rol o sector…" autocomplete="off"/>
+    </div>
+    <div class="section-lbl" style="margin-top:4px">Personas registradas</div>
+    <div id="new-chat-list" class="new-chat-list"></div>
+  </div>
+</div>
+</div>
 
 <!-- CHAT DOCK — flota en la esquina inferior derecha; persiste entre páginas -->
 <div id="chat-dock" class="chat-dock" style="display:none"></div>
@@ -1386,8 +1470,8 @@ function renderAll(){updateTitle();renderActivos();renderHistorial();refreshDeta
 function updateTitle(){var n=allReports.filter(function(r){return r.urgency==='alta'&&r.status!=='resuelto';}).length;var nActive=allReports.filter(function(r){return r.status!=='resuelto';}).length;document.title=n>0?'('+n+' ALTA) Reportes GSM':'Reportes GSM';var ad=G('alert-dot');if(ad){ad.classList[n>0?'add':'remove']('on');}var tb=G('topbar-bell');if(tb){tb.classList[n>0?'add':'remove']('has-alert');}var nb=G('nav-badge-activos');if(nb){if(nActive>0){nb.textContent=nActive;nb.style.display='inline-block';nb.classList[n>0?'add':'remove']('has-alta');}else{nb.style.display='none';}}if(G('notif-panel')&&G('notif-panel').classList.contains('on'))renderNotifPanel();}
 
 function renderNotifPanel(){var list=G('notif-list');if(!list)return;var items=[];allReports.filter(function(r){return r.urgency==='alta'&&r.status!=='resuelto';}).slice(0,6).forEach(function(r){items.push({id:r.id,kind:'alta',title:r.problemType||'Reporte de alta urgencia',meta:(r.sectorLabel||r.sector||'')+' · '+fmtTime(r.createdAt),onClick:function(){closeNotifPanel();renderPage('activos');setTimeout(function(){openDetalle(r);},80);}});});allReports.filter(function(r){return r.urgency==='media'&&r.status!=='resuelto';}).slice(0,3).forEach(function(r){items.push({id:r.id,kind:'media',title:r.problemType||'Reporte',meta:(r.sectorLabel||r.sector||'')+' · '+fmtTime(r.createdAt),onClick:function(){closeNotifPanel();renderPage('activos');setTimeout(function(){openDetalle(r);},80);}});});var p=currentProfile;var myName=p&&p.name?p.name:'';(window.allAvisos||[]).slice(0,12).forEach(function(a){if(!a.body||!myName)return;if(a.body.indexOf('@'+myName)<0&&a.body.indexOf('@'+myName.split(' ')[0])<0)return;items.push({id:'av-'+a.id,kind:'mention',title:'Te mencionaron en el tablón',meta:(a.authorName||'Alguien')+': "'+(a.body||'').slice(0,80).replace(/\n/g,' ')+(a.body.length>80?'…':'')+'"',onClick:function(){closeNotifPanel();renderPage('tablon');}});});if(!items.length){list.innerHTML='<div class="notif-empty"><svg class="icn"><use href="#i-bell"/></svg><div><div style="font-weight:600;color:var(--txt2);margin-bottom:2px">Sin notificaciones</div><div>Cuando haya reportes urgentes o menciones, vas a verlos acá.</div></div></div>';return;}list.innerHTML=items.map(function(it,i){var icn=it.kind==='mention'?'i-megaphone':'i-alert';return '<div class="notif-item '+it.kind+'" data-i="'+i+'"><span class="notif-item-icn"><svg class="icn sm"><use href="#'+icn+'"/></svg></span><div class="notif-item-body"><div class="notif-item-title">'+esc(it.title)+'</div><div class="notif-item-meta">'+esc(it.meta)+'</div></div></div>';}).join('');list.querySelectorAll('.notif-item').forEach(function(el){var i=parseInt(el.dataset.i,10);el.onclick=items[i].onClick;});}
-window.closeNotifPanel=function(){var p=G('notif-panel');if(p)p.classList.remove('on');};
-window.openNotifPanel=function(){var p=G('notif-panel');if(!p)return;renderNotifPanel();p.classList.add('on');};
+window.closeNotifPanel=function(){var p=G('notif-panel');if(p)p.classList.remove('on');var b=G('topbar-bell');if(b)b.classList.remove('opening');};
+window.openNotifPanel=function(){var p=G('notif-panel');if(!p)return;renderNotifPanel();var b=G('topbar-bell');if(b){b.classList.remove('opening');void b.offsetWidth;b.classList.add('opening');}p.classList.add('on');};
 (function(){var b=G('topbar-bell');if(!b)return;b.addEventListener('click',function(e){e.stopPropagation();var p=G('notif-panel');if(!p)return;if(p.classList.contains('on'))closeNotifPanel();else openNotifPanel();});document.addEventListener('click',function(e){var p=G('notif-panel');if(!p||!p.classList.contains('on'))return;if(!p.contains(e.target)&&!b.contains(e.target))closeNotifPanel();});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNotifPanel();});})();
 window.openSidebar=function(){G('sidebar').classList.add('open');G('sidebar-overlay').classList.add('on');};
 window.closeSidebar=function(){G('sidebar').classList.remove('open');G('sidebar-overlay').classList.remove('on');};
@@ -2162,7 +2246,11 @@ function sendChatMessage(otherUid,body){var p=currentProfile;if(!p||!p.uid)retur
 function findUserByUid(uid){var u=(window.allUsers||[]).find(function(x){return x.uid===uid;});if(u)return u;if(window._adminUsers&&_adminUsers[uid])return _adminUsers[uid];return null;}
 function renderChatUserList(){var container=G('chat-userlist-items');if(!container)return;var p=currentProfile;if(!p||!p.uid){container.innerHTML='<div class="empty">Iniciá sesión.</div>';return;}var q=(G('chat-search').value||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&u.name;});if(q)users=users.filter(function(u){return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q);});users.sort(function(a,b){var aId=chatId(p.uid,a.uid),bId=chatId(p.uid,b.uid);var aLast=chatSubs[aId]&&chatSubs[aId].messages.length?chatSubs[aId].messages[chatSubs[aId].messages.length-1].timestamp:0;var bLast=chatSubs[bId]&&chatSubs[bId].messages.length?chatSubs[bId].messages[chatSubs[bId].messages.length-1].timestamp:0;if(aLast||bLast)return bLast-aLast;return (a.name||'').localeCompare(b.name||'');});container.innerHTML=users.map(function(u){var id=chatId(p.uid,u.uid);var sub=chatSubs[id];var lastMsg=sub&&sub.messages.length?sub.messages[sub.messages.length-1]:null;var preview=lastMsg?(lastMsg.authorUid===p.uid?'Vos: ':'')+(lastMsg.body||'').slice(0,40):'Iniciar conversación';var time=lastMsg?chatFmtTime(lastMsg.timestamp):'';var hasUnread=lastMsg&&lastMsg.authorUid!==p.uid&&(!chatLastSeen[u.uid]||chatLastSeen[u.uid]<lastMsg.timestamp);var active=chatActiveOther===u.uid;var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="chat-user'+(active?' active':'')+(hasUnread?' has-unread':'')+'" data-uid="'+esc(u.uid)+'"><span class="chat-user-avatar">'+esc(chatInitials(u.name))+'</span><div class="chat-user-body"><div class="chat-user-name">'+esc(u.name)+'</div><div class="chat-user-meta">'+esc(preview)+(time?' · '+esc(time):'')+'</div></div><span class="chat-user-unread"></span></div>';}).join('')||'<div class="empty" style="padding:30px 16px"><div style="font-weight:600;color:var(--txt2);margin-bottom:4px">Sin usuarios</div><div style="font-size:12px;color:var(--txt3)">No hay otros usuarios registrados todavía.</div></div>';container.querySelectorAll('.chat-user').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;chatActiveOther=uid;chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(uid);renderChatUserList();renderChatThread(uid);updateChatBadge();};});}
 function renderChatThread(otherUid){var thread=G('chat-thread');if(!thread)return;var p=currentProfile;var other=findUserByUid(otherUid);if(!other){thread.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Seleccioná una conversación</div></div>';return;}var sub=subscribeChat(otherUid);var msgs=sub.messages||[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+'">'+esc(m.body)+'</div><div class="chat-msg-meta" style="'+(out?'align-self:flex-end':'align-self:flex-start')+'">'+esc(chatFmtTime(m.timestamp))+'</div>';});if(!msgs.length)msgsHtml='<div class="chat-empty"><div style="font-weight:600;color:var(--txt2)">Sin mensajes todavía</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Escribí algo abajo para empezar.</div></div>';var roleLabel=(other.role==='admin'?'Admin':other.role==='gerencia'?'Gerencia':other.role==='enc-clasif'?'Clasif.':other.role==='encargado'?'Encargado':other.role||'');var secStr=(SECTORS&&other.sector&&SECTORS[other.sector])?SECTORS[other.sector]:(other.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ');thread.innerHTML='<div class="chat-thread-head"><span class="chat-user-avatar">'+esc(chatInitials(other.name))+'</span><div style="flex:1;min-width:0"><div class="chat-thread-head-name">'+esc(other.name)+'</div><div class="chat-thread-head-role">'+esc(meta)+'</div></div><button class="chat-mini-btn" title="Abrir mini ventana" onclick="popOutChat(\''+esc(otherUid)+'\')"><svg class="icn sm"><use href="#i-chat"/></svg></button></div><div class="chat-msgs" id="chat-msgs-main">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-input-text" placeholder="Escribí un mensaje..." rows="1"></textarea><button class="chat-send-btn" id="chat-send-btn" aria-label="Enviar"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=G('chat-msgs-main');if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=G('chat-input-text'),btn=G('chat-send-btn');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(otherUid,v);ta.value='';ta.style.height='auto';}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(120,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};ta.focus();}}
-function openChatPage(){renderChatUserList();var s=G('chat-search');if(s&&!s._wired){s._wired=true;s.oninput=function(){renderChatUserList();};}var nb=G('btn-nuevo-chat');if(nb&&!nb._wired){nb._wired=true;nb.onclick=function(){var s2=G('chat-search');if(s2){s2.focus();s2.select&&s2.select();}var ul=G('chat-userlist-items');if(ul){ul.scrollTop=0;ul.style.outline='2px solid var(--peach)';ul.style.outlineOffset='4px';ul.style.borderRadius='10px';setTimeout(function(){ul.style.outline='';ul.style.outlineOffset='';},1400);}};}if(chatActiveOther)renderChatThread(chatActiveOther);}
+function openChatPage(){renderChatUserList();var s=G('chat-search');if(s&&!s._wired){s._wired=true;s.oninput=function(){renderChatUserList();};}var nb=G('btn-nuevo-chat');if(nb&&!nb._wired){nb._wired=true;nb.onclick=openNewChatModal;}if(chatActiveOther)renderChatThread(chatActiveOther);}
+
+window.openNewChatModal=function(){var mbg=G('mbg-new-chat');if(!mbg)return;mbg.classList.add('on');var s=G('new-chat-search');if(s){s.value='';renderNewChatList('');setTimeout(function(){s.focus();},100);if(!s._wired){s._wired=true;s.oninput=function(){renderNewChatList(this.value);};}}};
+function renderNewChatList(q){var list=G('new-chat-list');if(!list)return;var p=currentProfile;if(!p||!p.uid){list.innerHTML='<div class="new-chat-empty">Iniciá sesión.</div>';return;}q=(q||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&u.name;});if(q){users=users.filter(function(u){var roleStr=(u.role==='admin'?'admin administración':u.role==='gerencia'?'gerencia':u.role==='enc-clasif'?'clasificación clasif':u.role==='encargado'?'encargado':u.role||'').toLowerCase();var secStr=((SECTORS&&u.sector&&SECTORS[u.sector])||u.sector||'').toLowerCase();return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)||roleStr.includes(q)||secStr.includes(q);});}users.sort(function(a,b){return(a.name||'').localeCompare(b.name||'');});if(!users.length){list.innerHTML='<div class="new-chat-empty"><div class="empty-icon">·</div><div style="font-weight:700;color:var(--txt2);margin-bottom:4px">Sin resultados</div><div>'+(q?'Probá con otro nombre, email, rol o sector.':'No hay otros usuarios registrados todavía.')+'</div></div>';return;}list.innerHTML=users.map(function(u){var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="new-chat-item" data-uid="'+esc(u.uid)+'"><span class="avatar">'+esc(chatInitials(u.name))+'</span><div class="body"><div class="name">'+esc(u.name)+'</div><div class="meta">'+esc(meta)+'</div></div><svg class="chev icn sm"><use href="#i-arrow-right"/></svg></div>';}).join('');list.querySelectorAll('.new-chat-item').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;startChatWith(uid);};});}
+function startChatWith(otherUid){chatActiveOther=otherUid;chatLastSeen[otherUid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(otherUid);closeModal('mbg-new-chat');if(!document.getElementById('pg-chat').classList.contains('on'))renderPage('chat');else{renderChatUserList();renderChatThread(otherUid);}updateChatBadge();}
 window.popOutChat=function(uid){if(chatActiveOther===uid)chatActiveOther=null;chatMiniOpen[uid]={minimized:false};subscribeChat(uid);renderChatDock();renderChatUserList();var t=G('chat-thread');if(t)t.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Conversación abierta en mini ventana</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Mirá abajo a la derecha. Tocá otra persona para empezar otra conversación.</div></div>';};
 window.closeMiniChat=function(uid){delete chatMiniOpen[uid];unsubscribeChat(uid);renderChatDock();updateChatBadge();};
 window.toggleMiniChat=function(uid){if(!chatMiniOpen[uid])return;chatMiniOpen[uid].minimized=!chatMiniOpen[uid].minimized;if(!chatMiniOpen[uid].minimized){chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}renderChatDock();updateChatBadge();};
