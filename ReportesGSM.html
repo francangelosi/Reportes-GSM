@@ -548,6 +548,76 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
 .merr{color:var(--rojo);font-size:13px;background:var(--rojo-claro);border:1.5px solid var(--rojo-borde);padding:9px 13px;border-radius:var(--r-sm);display:none}
 .mok{color:var(--verde-med);font-size:13px;background:var(--verde-claro);border:1.5px solid var(--verde-borde);padding:9px 13px;border-radius:var(--r-sm);display:none}
 .merr.on,.mok.on{display:block}
+
+/* MODAL "NUEVO REPORTE" — variante táctil (D) */
+.modal-nr .mhead{padding:22px 26px 18px}
+.modal-nr .mhead-kicker{display:block;font-size:10.5px;color:var(--txt3);letter-spacing:.16em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.modal-nr .mtit{font-size:22px;letter-spacing:-.01em}
+.modal-nr .mbody{padding:22px 24px;gap:20px}
+.modal-nr .mfoot{padding:16px 24px;background:var(--bg3)}
+
+.modal-nr .mfl{font-size:11px;color:var(--txt2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;gap:8px}
+.modal-nr .mfl .req{color:var(--peach-2);margin-left:2px}
+.modal-nr .mfl .lhint{font-size:10.5px;color:var(--txt3);font-style:italic;font-weight:500;letter-spacing:0;text-transform:none}
+.modal-nr .mhint{font-size:11.5px;color:var(--txt3);margin-top:6px;line-height:1.4}
+
+.modal-nr input[type=text],.modal-nr input:not([type]),.modal-nr select,.modal-nr textarea{
+  width:100%;padding:13px 14px;font-size:14.5px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--bg2);color:var(--txt);outline:none;
+  font-family:var(--font-sans);transition:border-color .12s;
+}
+.modal-nr textarea{resize:vertical;min-height:110px;line-height:1.5}
+.modal-nr input:focus,.modal-nr select:focus,.modal-nr textarea:focus{border-color:var(--peach-borde)}
+.modal-nr input:disabled{background:var(--bg3);color:var(--txt2);cursor:not-allowed}
+
+/* Sector card */
+.nr-sector-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.nr-sector-card .ic{width:42px;height:42px;border-radius:50%;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--verde-med)}
+.nr-sector-card .ic .icn{width:20px;height:20px}
+.nr-sector-card .kk{font-size:10.5px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.nr-sector-card .nn{font-size:14px;font-weight:700;color:var(--txt);letter-spacing:-.005em;margin-top:1px}
+.nr-sector-card .chg{margin-left:auto;font-size:11.5px;color:var(--verde-med);background:none;border:none;cursor:pointer;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+/* Plazo chips grid */
+.nr-plazo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nr-plazo-chip{background:var(--bg2);border:1.5px solid var(--border);border-radius:10px;padding:14px 12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;
+  transition:background .12s, border-color .12s;user-select:none}
+.nr-plazo-chip .dot{width:10px;height:10px;border-radius:50%;margin-bottom:4px;background:#999}
+.nr-plazo-chip .lbl{font-size:12.5px;font-weight:700;letter-spacing:-.005em;color:var(--txt)}
+.nr-plazo-chip .hnt{font-size:10.5px;color:var(--txt3);line-height:1.3}
+.nr-plazo-chip[data-plazo="inmediato"] .dot{background:#B83232}
+.nr-plazo-chip[data-plazo="en_el_dia"] .dot{background:#C76F4A}
+.nr-plazo-chip[data-plazo="24_48hs"] .dot{background:#8C6A1A}
+.nr-plazo-chip[data-plazo="semana"] .dot{background:#3D5C42}
+.nr-plazo-chip.on[data-plazo="inmediato"]{background:#FBEEDF;border-color:#E2B98F}
+.nr-plazo-chip.on[data-plazo="inmediato"] .lbl{color:#B83232}
+.nr-plazo-chip.on[data-plazo="en_el_dia"]{background:#FBEEDF;border-color:#E2B98F}
+.nr-plazo-chip.on[data-plazo="en_el_dia"] .lbl{color:#C76F4A}
+.nr-plazo-chip.on[data-plazo="24_48hs"]{background:#FAF0D8;border-color:#E0CC8A}
+.nr-plazo-chip.on[data-plazo="24_48hs"] .lbl{color:#8C6A1A}
+.nr-plazo-chip.on[data-plazo="semana"]{background:#EBF1E5;border-color:#C2D2B4}
+.nr-plazo-chip.on[data-plazo="semana"] .lbl{color:#3D5C42}
+
+/* Dirigido pills */
+.nr-dir-pills{display:flex;flex-wrap:wrap;gap:6px}
+.nr-dir-pill{padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;
+  background:var(--bg2);border:1.5px solid var(--border);color:var(--txt2);
+  transition:background .12s, border-color .12s, color .12s;user-select:none;line-height:1.2}
+.nr-dir-pill.on{background:var(--peach-claro);border-color:var(--peach-borde);color:#6A3919}
+
+/* Recurrencia stepper */
+.nr-recurr-row{display:flex;align-items:center;gap:10px}
+.nr-recurr-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--border);background:var(--bg2);
+  cursor:pointer;font-size:20px;font-weight:700;color:var(--txt2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;line-height:1;padding:0}
+.nr-recurr-btn:hover{background:var(--bg3);border-color:var(--border2)}
+.nr-recurr-btn:disabled{opacity:.35;cursor:not-allowed}
+.nr-recurr-display{flex:1;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:14px;
+  display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px}
+.nr-recurr-num{font-family:var(--font-display);font-size:26px;color:var(--peach-2);line-height:1}
+.nr-recurr-lbl{font-size:13px;color:var(--txt2);font-weight:600}
 .divider{height:1px;background:var(--border);margin:4px 0}
 .section-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;font-family:var(--font-sans)}
 
@@ -1333,40 +1403,90 @@ tr:hover td{background:var(--bg3)}
 </div>
 <!-- MODAL: NUEVO REPORTE -->
 <div class="mbg" id="mbg-nuevo">
-<div class="modal">
-  <div class="mhead"><span class="mtit">Nuevo reporte de incidente</span><button class="ib sm" onclick="closeModal('mbg-nuevo')">✕</button></div>
+<div class="modal modal-nr">
+  <div class="mhead">
+    <div>
+      <span class="mhead-kicker">Nuevo registro</span>
+      <span class="mtit">Reporte de incidente</span>
+    </div>
+    <button class="ib sm" onclick="closeModal('mbg-nuevo')" aria-label="Cerrar">✕</button>
+  </div>
   <div class="mbody">
-    <div class="mfg"><label class="mfl">Sector</label>
-      <input id="nr-sector" disabled style="opacity:.6"/>
-      <select id="nr-sector-sel" style="display:none"></select>
+
+    <!-- Sector card -->
+    <div class="nr-sector-card" id="nr-sector-card">
+      <div class="ic"><svg class="icn"><use href="#i-folder"/></svg></div>
+      <div style="flex:1;min-width:0">
+        <div class="kk">Tu sector</div>
+        <div class="nn" id="nr-sector-name">—</div>
+      </div>
+      <button class="chg" id="nr-sector-change" type="button" style="display:none">Cambiar</button>
+      <!-- Fallback select for admins / users without sector -->
+      <select id="nr-sector-sel" style="display:none;flex:1"></select>
     </div>
-    <div class="mfg"><label class="mfl">Operario que detectó el problema *</label><input id="nr-operario" placeholder="Nombre del operario"/><span class="mhint">El operario te informó oralmente. Registrá su nombre acá.</span></div>
-    <div class="mfg"><label class="mfl">Dirigido a</label><div id="nr-dirigido-checks" style="display:flex;flex-direction:column;gap:6px;margin-top:4px"></div><span class="mhint">Los sectores seleccionados podrán ver y modificar el estado.</span></div>
-    <div class="mfg"><label class="mfl">Tipo de problema *</label><select id="nr-tipo"><option value="">— Seleccioná —</option></select></div>
+
     <div class="mfg">
-      <label class="mfl">Plazo para resolver *</label>
-      <select id="nr-plazo">
-        <option value="inmediato">🔴 Inmediato — resolver ahora mismo</option>
-        <option value="en_el_dia" selected>🟠 En el día — antes de que termine el turno</option>
-        <option value="24_48hs">🟡 24 a 48 hs — urgencia media</option>
-        <option value="semana">🟢 Hasta una semana — baja urgencia</option>
-      </select>
-      <span class="mhint" id="nr-plazo-hint"></span>
+      <label class="mfl" for="nr-operario">¿Quién detectó el problema?<span class="req">*</span></label>
+      <input id="nr-operario" type="text" placeholder="Nombre del operario"/>
+      <div class="mhint">El operario te informó oralmente. Registrá su nombre acá.</div>
     </div>
-    <div class="mfg"><label class="mfl">Descripción detallada *</label><textarea id="nr-desc" rows="4" placeholder="Describí el problema: qué pasó, cuándo, dónde, qué se observó..."></textarea></div>
+
     <div class="mfg">
-      <label class="mfl">¿Cuántas veces se reportó este problema antes de registrarlo?</label>
-      <select id="nr-recurrencias">
-        <option value="1">1 vez — primera vez que ocurre</option>
-        <option value="2">2 veces</option>
-        <option value="3">3 veces</option>
-        <option value="4">4 veces</option>
-        <option value="5">5 veces</option>
-        <option value="6">6 a 10 veces</option>
-        <option value="10">Más de 10 veces — problema recurrente</option>
-      </select>
-      <span class="mhint">Contá cuántas veces el operario o vos ya habían notado este mismo problema.</span>
+      <label class="mfl" for="nr-tipo">Tipo de problema<span class="req">*</span></label>
+      <select id="nr-tipo"><option value="">— Seleccioná —</option></select>
     </div>
+
+    <div class="mfg">
+      <label class="mfl" for="nr-desc">¿Qué pasó?<span class="req">*</span></label>
+      <textarea id="nr-desc" rows="5" placeholder="Contá con detalle: qué, cuándo, dónde, qué se observó..."></textarea>
+    </div>
+
+    <div class="mfg">
+      <label class="mfl">Plazo para resolver<span class="req">*</span></label>
+      <div class="nr-plazo-grid" id="nr-plazo-grid">
+        <div class="nr-plazo-chip" data-plazo="inmediato" role="button" tabindex="0">
+          <span class="dot"></span>
+          <span class="lbl">Inmediato</span>
+          <span class="hnt">Ahora mismo</span>
+        </div>
+        <div class="nr-plazo-chip on" data-plazo="en_el_dia" role="button" tabindex="0">
+          <span class="dot"></span>
+          <span class="lbl">En el día</span>
+          <span class="hnt">Antes del fin del turno</span>
+        </div>
+        <div class="nr-plazo-chip" data-plazo="24_48hs" role="button" tabindex="0">
+          <span class="dot"></span>
+          <span class="lbl">24 a 48 hs</span>
+          <span class="hnt">Urgencia media</span>
+        </div>
+        <div class="nr-plazo-chip" data-plazo="semana" role="button" tabindex="0">
+          <span class="dot"></span>
+          <span class="lbl">Hasta 1 semana</span>
+          <span class="hnt">Baja urgencia</span>
+        </div>
+      </div>
+      <input type="hidden" id="nr-plazo" value="en_el_dia"/>
+    </div>
+
+    <div class="mfg">
+      <label class="mfl">Dirigido a <span class="lhint">Toca uno o más</span></label>
+      <div class="nr-dir-pills" id="nr-dirigido-checks"></div>
+      <div class="mhint">Los sectores seleccionados podrán ver y modificar el estado.</div>
+    </div>
+
+    <div class="mfg">
+      <label class="mfl">¿Cuántas veces se reportó antes?</label>
+      <div class="nr-recurr-row">
+        <button type="button" class="nr-recurr-btn" id="nr-recurr-minus" aria-label="Restar">−</button>
+        <div class="nr-recurr-display">
+          <span class="nr-recurr-num" id="nr-recurr-num">1</span>
+          <span class="nr-recurr-lbl" id="nr-recurr-lbl">1 vez — primera vez que ocurre</span>
+        </div>
+        <button type="button" class="nr-recurr-btn" id="nr-recurr-plus" aria-label="Sumar">+</button>
+      </div>
+      <input type="hidden" id="nr-recurrencias" value="1"/>
+    </div>
+
     <div class="merr" id="nr-err"></div>
   </div>
   <div class="mfoot">
@@ -1489,13 +1609,127 @@ function bindCards(container){container.querySelectorAll('.rcard').forEach(funct
 function openDetalle(r){detalleReportId=r.id;renderDetalle(r);G('mbg-detalle').classList.add('on');}
 function refreshDetalleIfOpen(){if(!G('mbg-detalle').classList.contains('on')||!detalleReportId)return;var r=allReports.find(function(x){return x.id===detalleReportId;});if(r)renderDetalle(r);}
 function renderDetalle(r){var isResolved=r.status==='resuelto';var isAdm=currentProfile.role==='admin';var p=currentProfile;var dirs=getDirigidoArray(r);var canManage=isAdm||(r.encargadoUid&&r.encargadoUid===p.uid)||(dirs.length&&dirs.indexOf(p.sector)>=0);var canEsc=r.urgency!=='alta'&&!isResolved&&canManage;var tl=r.timeline||[];var tlHtml=tl.length?tl.map(function(e,i){var isLast=i===tl.length-1;var delBtn=isAdm?'<button class="ib dan sm" style="padding:2px 8px;font-size:11px;margin-top:4px" onclick="confirmDeleteEntry(\''+r.id+'\','+i+')">Eliminar</button>':'';return'<div class="tl-item"><div class="tl-line"><div class="tl-dot '+(e.authorRole==='sistema'?'sys':'')+'"></div>'+(!isLast?'<div class="tl-conn"></div>':'')+'</div><div class="tl-body"><div class="tl-author">'+esc(e.authorName)+(e.authorRole&&e.authorRole!=='sistema'?' - '+e.authorRole:'')+'</div><div class="tl-text">'+esc(e.text)+'</div><div class="tl-time">'+fmtFull(e.timestamp)+'</div>'+delBtn+'</div></div>';}).join(''):'<p style="font-size:12px;color:var(--txt3);padding:8px 0">Sin actualizaciones todavia.</p>';var html='<div style="display:flex;gap:6px;flex-wrap:wrap">'+badgeU(r.urgency)+badgeS(r.status)+(r.escalated?'<span class="badge b-escalado">Escalado</span>':'');if(r.plazo){var pcfg=getPlazoInfo(r.plazo);html+='<span class="badge" style="background:'+pcfg.color+'20;color:'+pcfg.color+';">'+pcfg.label+'</span>';}html+='</div><div><div style="font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px">'+esc(r.problemType)+'</div><div style="font-size:12px;color:var(--txt3);display:flex;gap:14px;flex-wrap:wrap"><span>Sector: '+esc(r.sectorLabel||r.sector)+'</span><span>Detecto: <strong style="color:var(--txt2)">'+esc(r.operarioName)+'</strong></span><span>Cargado: <strong style="color:var(--txt2)">'+fmtFull(r.createdAt)+'</strong></span></div></div>';if(dirs.length){html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">'+dirs.map(function(d){return '<span class="badge" style="background:var(--peach-claro);color:#6A3919;border:1px solid var(--peach-borde);font-weight:600">Para: '+(SECTORS[d]||d)+'</span>';}).join('')+'</div>';}html+=plazoCountdown(r)+'<div class="divider"></div><div><div class="section-lbl">Descripcion</div><p style="font-size:13px;color:var(--txt2);line-height:1.6">'+esc(r.description)+'</p></div><div class="divider"></div><div><div class="section-lbl">Historial</div><div class="timeline">'+tlHtml+'</div></div>';if(!isResolved){html+='<div class="divider"></div><div><div class="section-lbl">Cargar comentario</div><div class="mfg" style="margin-bottom:8px"><textarea id="upd-text" rows="3" placeholder="Escribi tu comentario o novedad..."></textarea></div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'+(canManage?'<select id="upd-status" style="flex:1;min-width:160px"><option value="">Sin cambio de estado</option><option value="en_proceso">Cambiar a: En proceso</option><option value="abierto">Cambiar a: Abierto</option></select>':'<input type="hidden" id="upd-status" value="">')+'<button class="ib pri sm" id="btn-upd-submit">Guardar</button></div><div class="merr" id="upd-err" style="margin-top:8px"></div></div>';if(canEsc&&canManage){html+='<div><button class="ib warn sm" id="btn-show-esc" style="margin-top:4px">Escalar urgencia</button><div id="esc-form" style="display:none;margin-top:8px" class="escalate-box"><div class="escalate-box-title">Escalar a '+(ESCALA_A[r.urgency]||'alta').toUpperCase()+'</div><textarea id="esc-reason" rows="2" placeholder="Motivo (requerido)..."></textarea><div style="display:flex;gap:8px"><button class="ib dan sm" id="btn-esc-confirm">Confirmar</button><button class="ib sm" id="btn-esc-cancel">Cancelar</button></div><div class="merr" id="esc-err"></div></div></div>';}if(canManage){html+='<div style="margin-top:4px"><button class="ib grn sm" id="btn-show-close">Cerrar reporte</button><div id="close-form" style="display:none;margin-top:8px" class="close-box"><div class="close-box-title">Reporte de cierre</div><div class="mfg"><label class="mfl">Resolucion *</label><textarea id="close-resol" rows="3" placeholder="Como se resolvio el problema..."></textarea></div><div class="mfg"><label class="mfl">Justificacion de demora (si aplica)</label><textarea id="close-just" rows="2" placeholder="Si se superaron los plazos..."></textarea></div><div style="display:flex;gap:8px"><button class="ib grn sm" id="btn-close-confirm">Confirmar cierre</button><button class="ib sm" id="btn-close-cancel">Cancelar</button></div><div class="merr" id="close-err"></div></div></div>';}}if(isResolved&&r.resolution){html+='<div class="divider"></div><div class="close-box"><div class="close-box-title">Cerrado por '+esc(r.closedBy||'')+'</div><p style="font-size:13px;color:var(--txt);line-height:1.5;margin-top:6px">'+esc(r.resolution)+'</p>'+(r.justificacion?'<p style="font-size:12px;color:#7A5500;margin-top:8px;font-style:italic">Justificacion: '+esc(r.justificacion)+'</p>':'')+'</div>';}if(isAdm){html+='<div class="divider"></div><div style="background:#FDEAEA;border:2px solid #F0B0B0;border-radius:10px;padding:14px"><div style="font-size:12px;font-weight:700;color:#8B2E2E;margin-bottom:8px">Zona de peligro - solo admin</div><button class="ib dan sm" id="btn-del-report">Eliminar reporte completo</button></div>';}G('detalle-body').innerHTML=html;if(isAdm){var delBtn=G('btn-del-report');if(delBtn)delBtn.onclick=function(){if(!confirm('Eliminar este reporte? Esta accion no se puede deshacer.'))return;if(!confirm('Confirmacion final: seguro que queres eliminar este reporte?'))return;delBtn.disabled=true;deleteReport(r.id,function(e){if(e){alert('Error al eliminar.');delBtn.disabled=false;}else closeModal('mbg-detalle');});};}if(!isResolved){G('btn-upd-submit').onclick=function(){var text=G('upd-text').value.trim(),status=G('upd-status').value,err=G('upd-err');err.classList.remove('on');if(!text){err.textContent='Escribi una actualizacion.';err.classList.add('on');return;}G('btn-upd-submit').disabled=true;var entry={authorName:currentProfile.name||currentProfile.email||'Usuario',authorRole:currentProfile.role||'encargado',text:text,timestamp:Date.now()};addUpdate(r.id,entry,status||null,function(e){G('btn-upd-submit').disabled=false;if(e){err.textContent='Error al guardar.';err.classList.add('on');}else{G('upd-text').value='';G('upd-status').value='';}});};if(canEsc){G('btn-show-esc').onclick=function(){G('esc-form').style.display='block';G('btn-show-esc').style.display='none';};G('btn-esc-cancel').onclick=function(){G('esc-form').style.display='none';G('btn-show-esc').style.display='inline-flex';};G('btn-esc-confirm').onclick=function(){var reason=G('esc-reason').value.trim(),err=G('esc-err');err.classList.remove('on');if(!reason){err.textContent='Explica el motivo.';err.classList.add('on');return;}G('btn-esc-confirm').disabled=true;escalateReport(r.id,reason,function(e){G('btn-esc-confirm').disabled=false;if(e){err.textContent='Error.';err.classList.add('on');}});};}G('btn-show-close').onclick=function(){G('close-form').style.display='block';G('btn-show-close').style.display='none';};G('btn-close-cancel').onclick=function(){G('close-form').style.display='none';G('btn-show-close').style.display='inline-flex';};G('btn-close-confirm').onclick=function(){var resol=G('close-resol').value.trim(),just=G('close-just').value.trim(),err=G('close-err');err.classList.remove('on');if(!resol){err.textContent='Completa la resolucion.';err.classList.add('on');return;}G('btn-close-confirm').disabled=true;closeReport(r.id,resol,just,function(e){G('btn-close-confirm').disabled=false;if(e){err.textContent='Error.';err.classList.add('on');}else closeModal('mbg-detalle');});};}}
-G('btn-nuevo').onclick=function(){var p=currentProfile;var sectorSel=G('nr-sector-sel'),sectorInp=G('nr-sector');sectorInp.style.display='none';if(sectorSel){sectorSel.style.display='block';sectorSel.value=p.sector||'';if(p.sector)loadTipos(p.sector);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';}G('nr-operario').value='';G('nr-desc').value='';document.querySelectorAll('input[name="nr-dirigido"]').forEach(function(cb){cb.checked=false;});G('nr-plazo').value='en_el_dia';var hint=G('nr-plazo-hint');if(hint){var cfg=getPlazoInfo('en_el_dia');hint.textContent=cfg.hint;hint.style.color=cfg.color;}G('nr-err').classList.remove('on');G('mbg-nuevo').classList.add('on');setTimeout(function(){G('nr-operario').focus();},100);};
-function loadTipos(sector){var tipos=PROBLEM_TYPES[sector]||['Otro'],sel=G('nr-tipo');sel.innerHTML='<option value="">Selecciona</option>';tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
+// ===== NUEVO REPORTE — Modal (variante táctil "D") =====
+G('btn-nuevo').onclick=function(){
+  var p=currentProfile;
+  // Sector: si el usuario tiene sector fijo, mostramos card. Si no (admin), mostramos select.
+  var card=G('nr-sector-card'),nameEl=G('nr-sector-name'),sel=G('nr-sector-sel'),chg=G('nr-sector-change');
+  var canChooseSector=!p.sector||p.role==='admin';
+  if(canChooseSector){
+    // mostrar select adentro del card, ocultar el nombre estático y la pieza visual queda compacta
+    card.style.display='flex';
+    nameEl.parentElement.style.display='none';
+    card.querySelector('.ic').style.display='none';
+    sel.style.display='block';
+    sel.value=p.sector||'';
+    if(chg)chg.style.display='none';
+    if(p.sector)loadTipos(p.sector);else G('nr-tipo').innerHTML='<option value="">Primero elegí un sector</option>';
+  } else {
+    card.style.display='flex';
+    nameEl.parentElement.style.display='block';
+    card.querySelector('.ic').style.display='flex';
+    sel.style.display='none';
+    nameEl.textContent=SECTORS[p.sector]||p.sector;
+    if(chg)chg.style.display='none';
+    loadTipos(p.sector);
+  }
+  // Reset campos
+  G('nr-operario').value='';
+  G('nr-desc').value='';
+  document.querySelectorAll('input[name="nr-dirigido"]').forEach(function(cb){cb.checked=false;});
+  document.querySelectorAll('.nr-dir-pill').forEach(function(pill){pill.classList.remove('on');});
+  // Plazo default
+  setNrPlazo('en_el_dia');
+  // Recurrencia default
+  setNrRecurrencia(1);
+  G('nr-err').classList.remove('on');
+  G('mbg-nuevo').classList.add('on');
+  setTimeout(function(){G('nr-operario').focus();},100);
+};
+function loadTipos(sector){var tipos=PROBLEM_TYPES[sector]||['Otro'],sel=G('nr-tipo');sel.innerHTML='<option value="">— Seleccioná —</option>';tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
+
+// ----- Plazo chips -----
+function setNrPlazo(plazo){
+  G('nr-plazo').value=plazo;
+  document.querySelectorAll('.nr-plazo-chip').forEach(function(ch){
+    ch.classList.toggle('on', ch.getAttribute('data-plazo')===plazo);
+  });
+}
+(function(){
+  document.querySelectorAll('.nr-plazo-chip').forEach(function(ch){
+    ch.onclick=function(){setNrPlazo(ch.getAttribute('data-plazo'));};
+    ch.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();setNrPlazo(ch.getAttribute('data-plazo'));}};
+  });
+})();
+
+// ----- Recurrencia stepper -----
+function recurrLabel(n){
+  if(n<=1)return '1 vez — primera vez que ocurre';
+  if(n>=11)return 'veces (problema recurrente)';
+  return n+' veces';
+}
+function setNrRecurrencia(n){
+  n=Math.max(1,Math.min(99,parseInt(n)||1));
+  G('nr-recurrencias').value=n;
+  G('nr-recurr-num').textContent=n>10?'10+':String(n);
+  G('nr-recurr-lbl').textContent=recurrLabel(n);
+  G('nr-recurr-minus').disabled=(n<=1);
+}
+G('nr-recurr-minus').onclick=function(){setNrRecurrencia((parseInt(G('nr-recurrencias').value)||1)-1);};
+G('nr-recurr-plus').onclick =function(){setNrRecurrencia((parseInt(G('nr-recurrencias').value)||1)+1);};
+
+// ----- Dirigido pills -----
 var DIRIGIDO_SECTORS=['adm-compras','adm-ventas','enc-clasif','ger-mantenimiento','ger-produccion','ger-administrativa'];
-(function(){var container=G('nr-dirigido-checks');if(!container)return;DIRIGIDO_SECTORS.forEach(function(k){var lbl=document.createElement('label');lbl.style.cssText='display:flex;align-items:center;gap:6px;font-size:13px;color:var(--txt);cursor:pointer;padding:4px 8px;border:1.5px solid var(--border);border-radius:8px;background:#fff';var cb=document.createElement('input');cb.type='checkbox';cb.value=k;cb.name='nr-dirigido';cb.style.cssText='accent-color:#9B7FD4;width:16px;height:16px;cursor:pointer';lbl.appendChild(cb);lbl.appendChild(document.createTextNode(SECTORS[k]));container.appendChild(lbl);});})();
-(function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Selecciona un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegi un sector</option>';};})();
-G('nr-plazo').onchange=function(){var cfg=getPlazoInfo(this.value);var hint=G('nr-plazo-hint');if(hint){hint.textContent=cfg.hint;hint.style.color=cfg.color;}};
-G('btn-nr-submit').onclick=function(){var p=currentProfile;var sector=G('nr-sector-sel')?G('nr-sector-sel').value:(p.sector||'');var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim(),plazo=G('nr-plazo').value;var urgencia=getPlazoInfo(plazo).urgencia;var err=G('nr-err');err.classList.remove('on');if(!sector){err.textContent='Selecciona un sector.';err.classList.add('on');return;}if(!tipo||!operario||!desc){err.textContent='Completa todos los campos obligatorios.';err.classList.add('on');return;}G('btn-nr-submit').disabled=true;G('btn-nr-submit').innerHTML='<span class="spin"></span> Guardando...';var dirigidoChecks=document.querySelectorAll('input[name="nr-dirigido"]:checked');var dirigidoA=[];var dirigidoLabels=[];dirigidoChecks.forEach(function(cb){dirigidoA.push(cb.value);dirigidoLabels.push(SECTORS[cb.value]||cb.value);});createReport({sector:sector,sectorLabel:SECTORS[sector]||sector,problemType:tipo,urgency:urgencia,plazo:plazo,description:desc,operarioName:operario,encargadoName:p.name||p.email||'Usuario',encargadoUid:p.uid||'',dirigidoA:dirigidoA.length?dirigidoA:null,dirigidoLabel:dirigidoLabels.length?dirigidoLabels.join(', '):null,recurrencias:parseInt(G('nr-recurrencias').value)||1},function(e){G('btn-nr-submit').disabled=false;G('btn-nr-submit').textContent='Crear reporte';if(e){err.textContent='Error al crear el reporte.';err.classList.add('on');}else closeModal('mbg-nuevo');});};
+(function(){
+  var container=G('nr-dirigido-checks');if(!container)return;
+  container.innerHTML='';
+  DIRIGIDO_SECTORS.forEach(function(k){
+    var pill=document.createElement('span');
+    pill.className='nr-dir-pill';
+    pill.setAttribute('data-sector',k);
+    pill.textContent=SECTORS[k]||k;
+    // hidden checkbox to preserve existing submit logic
+    var cb=document.createElement('input');
+    cb.type='checkbox';cb.value=k;cb.name='nr-dirigido';cb.style.display='none';
+    pill.appendChild(cb);
+    pill.onclick=function(){
+      cb.checked=!cb.checked;
+      pill.classList.toggle('on',cb.checked);
+    };
+    container.appendChild(pill);
+  });
+})();
+
+// ----- Sector select (fallback admin) -----
+(function(){var sel=G('nr-sector-sel');if(!sel)return;var ph=document.createElement('option');ph.value='';ph.textContent='Seleccioná un sector';sel.appendChild(ph);Object.keys(SECTORS).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){if(this.value)loadTipos(this.value);else G('nr-tipo').innerHTML='<option value="">Primero elegí un sector</option>';};})();
+
+// ----- Submit -----
+G('btn-nr-submit').onclick=function(){
+  var p=currentProfile;
+  var sector=G('nr-sector-sel')&&G('nr-sector-sel').style.display!=='none'?G('nr-sector-sel').value:(p.sector||'');
+  var tipo=G('nr-tipo').value,operario=G('nr-operario').value.trim(),desc=G('nr-desc').value.trim(),plazo=G('nr-plazo').value;
+  var urgencia=getPlazoInfo(plazo).urgencia;
+  var err=G('nr-err');err.classList.remove('on');
+  if(!sector){err.textContent='Seleccioná un sector.';err.classList.add('on');return;}
+  if(!tipo||!operario||!desc){err.textContent='Completá todos los campos obligatorios.';err.classList.add('on');return;}
+  G('btn-nr-submit').disabled=true;G('btn-nr-submit').innerHTML='<span class="spin"></span> Guardando...';
+  var dirigidoChecks=document.querySelectorAll('input[name="nr-dirigido"]:checked');
+  var dirigidoA=[],dirigidoLabels=[];
+  dirigidoChecks.forEach(function(cb){dirigidoA.push(cb.value);dirigidoLabels.push(SECTORS[cb.value]||cb.value);});
+  createReport({
+    sector:sector,sectorLabel:SECTORS[sector]||sector,
+    problemType:tipo,urgency:urgencia,plazo:plazo,
+    description:desc,operarioName:operario,
+    encargadoName:p.name||p.email||'Usuario',encargadoUid:p.uid||'',
+    dirigidoA:dirigidoA.length?dirigidoA:null,
+    dirigidoLabel:dirigidoLabels.length?dirigidoLabels.join(', '):null,
+    recurrencias:parseInt(G('nr-recurrencias').value)||1
+  },function(e){
+    G('btn-nr-submit').disabled=false;G('btn-nr-submit').textContent='Crear reporte';
+    if(e){err.textContent='Error al crear el reporte.';err.classList.add('on');}
+    else closeModal('mbg-nuevo');
+  });
+};
 var _adminUsers={};
 function loadAdminData(){
   G('admin-users-list').innerHTML='<div class="empty"><span class="spin"></span></div>';
@@ -2244,12 +2478,12 @@ function unsubscribeChat(otherUid){var p=currentProfile;if(!p||!p.uid)return;var
 function onChatUpdated(otherUid){if(chatActiveOther===otherUid)renderChatThread(otherUid);if(chatMiniOpen[otherUid])renderChatMini(otherUid);renderChatUserList();updateChatBadge();}
 function sendChatMessage(otherUid,body){var p=currentProfile;if(!p||!p.uid)return;body=String(body||'').trim();if(!body)return;var id=chatId(p.uid,otherUid);var entry={authorUid:p.uid,authorName:p.name||p.email||'Usuario',body:body,timestamp:Date.now()};fbDb.ref('chats/'+id+'/messages').push(entry);chatLastSeen[otherUid]=Date.now();saveChatLastSeen(chatLastSeen);}
 function findUserByUid(uid){var u=(window.allUsers||[]).find(function(x){return x.uid===uid;});if(u)return u;if(window._adminUsers&&_adminUsers[uid])return _adminUsers[uid];return null;}
-function renderChatUserList(){var container=G('chat-userlist-items');if(!container)return;var p=currentProfile;if(!p||!p.uid){container.innerHTML='<div class="empty">Iniciá sesión.</div>';return;}var q=(G('chat-search').value||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&u.name;});if(q)users=users.filter(function(u){return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q);});users.sort(function(a,b){var aId=chatId(p.uid,a.uid),bId=chatId(p.uid,b.uid);var aLast=chatSubs[aId]&&chatSubs[aId].messages.length?chatSubs[aId].messages[chatSubs[aId].messages.length-1].timestamp:0;var bLast=chatSubs[bId]&&chatSubs[bId].messages.length?chatSubs[bId].messages[chatSubs[bId].messages.length-1].timestamp:0;if(aLast||bLast)return bLast-aLast;return (a.name||'').localeCompare(b.name||'');});container.innerHTML=users.map(function(u){var id=chatId(p.uid,u.uid);var sub=chatSubs[id];var lastMsg=sub&&sub.messages.length?sub.messages[sub.messages.length-1]:null;var preview=lastMsg?(lastMsg.authorUid===p.uid?'Vos: ':'')+(lastMsg.body||'').slice(0,40):'Iniciar conversación';var time=lastMsg?chatFmtTime(lastMsg.timestamp):'';var hasUnread=lastMsg&&lastMsg.authorUid!==p.uid&&(!chatLastSeen[u.uid]||chatLastSeen[u.uid]<lastMsg.timestamp);var active=chatActiveOther===u.uid;var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="chat-user'+(active?' active':'')+(hasUnread?' has-unread':'')+'" data-uid="'+esc(u.uid)+'"><span class="chat-user-avatar">'+esc(chatInitials(u.name))+'</span><div class="chat-user-body"><div class="chat-user-name">'+esc(u.name)+'</div><div class="chat-user-meta">'+esc(preview)+(time?' · '+esc(time):'')+'</div></div><span class="chat-user-unread"></span></div>';}).join('')||'<div class="empty" style="padding:30px 16px"><div style="font-weight:600;color:var(--txt2);margin-bottom:4px">Sin usuarios</div><div style="font-size:12px;color:var(--txt3)">No hay otros usuarios registrados todavía.</div></div>';container.querySelectorAll('.chat-user').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;chatActiveOther=uid;chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(uid);renderChatUserList();renderChatThread(uid);updateChatBadge();};});}
+function renderChatUserList(){var container=G('chat-userlist-items');if(!container)return;var p=currentProfile;if(!p||!p.uid){container.innerHTML='<div class="empty">Iniciá sesión.</div>';return;}var q=(G('chat-search').value||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&(u.name||u.email);});if(q)users=users.filter(function(u){return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q);});users.sort(function(a,b){var aId=chatId(p.uid,a.uid),bId=chatId(p.uid,b.uid);var aLast=chatSubs[aId]&&chatSubs[aId].messages.length?chatSubs[aId].messages[chatSubs[aId].messages.length-1].timestamp:0;var bLast=chatSubs[bId]&&chatSubs[bId].messages.length?chatSubs[bId].messages[chatSubs[bId].messages.length-1].timestamp:0;if(aLast||bLast)return bLast-aLast;return (a.name||'').localeCompare(b.name||'');});container.innerHTML=users.map(function(u){var id=chatId(p.uid,u.uid);var sub=chatSubs[id];var lastMsg=sub&&sub.messages.length?sub.messages[sub.messages.length-1]:null;var preview=lastMsg?(lastMsg.authorUid===p.uid?'Vos: ':'')+(lastMsg.body||'').slice(0,40):'Iniciar conversación';var time=lastMsg?chatFmtTime(lastMsg.timestamp):'';var hasUnread=lastMsg&&lastMsg.authorUid!==p.uid&&(!chatLastSeen[u.uid]||chatLastSeen[u.uid]<lastMsg.timestamp);var active=chatActiveOther===u.uid;var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="chat-user'+(active?' active':'')+(hasUnread?' has-unread':'')+'" data-uid="'+esc(u.uid)+'"><span class="chat-user-avatar">'+esc(chatInitials(u.name||u.email))+'</span><div class="chat-user-body"><div class="chat-user-name">'+esc(u.name||u.email||'Usuario')+'</div><div class="chat-user-meta">'+esc(preview)+(time?' · '+esc(time):'')+'</div></div><span class="chat-user-unread"></span></div>';}).join('')||'<div class="empty" style="padding:30px 16px"><div style="font-weight:600;color:var(--txt2);margin-bottom:4px">'+(window._usersLoaded?'Sin usuarios':'Cargando usuarios…')+'</div><div style="font-size:12px;color:var(--txt3)">'+(window._usersLoaded?'No hay otros usuarios registrados todavía.':'Un momento, traemos la lista.')+'</div></div>';container.querySelectorAll('.chat-user').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;chatActiveOther=uid;chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(uid);renderChatUserList();renderChatThread(uid);updateChatBadge();};});}
 function renderChatThread(otherUid){var thread=G('chat-thread');if(!thread)return;var p=currentProfile;var other=findUserByUid(otherUid);if(!other){thread.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Seleccioná una conversación</div></div>';return;}var sub=subscribeChat(otherUid);var msgs=sub.messages||[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+'">'+esc(m.body)+'</div><div class="chat-msg-meta" style="'+(out?'align-self:flex-end':'align-self:flex-start')+'">'+esc(chatFmtTime(m.timestamp))+'</div>';});if(!msgs.length)msgsHtml='<div class="chat-empty"><div style="font-weight:600;color:var(--txt2)">Sin mensajes todavía</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Escribí algo abajo para empezar.</div></div>';var roleLabel=(other.role==='admin'?'Admin':other.role==='gerencia'?'Gerencia':other.role==='enc-clasif'?'Clasif.':other.role==='encargado'?'Encargado':other.role||'');var secStr=(SECTORS&&other.sector&&SECTORS[other.sector])?SECTORS[other.sector]:(other.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ');thread.innerHTML='<div class="chat-thread-head"><span class="chat-user-avatar">'+esc(chatInitials(other.name))+'</span><div style="flex:1;min-width:0"><div class="chat-thread-head-name">'+esc(other.name)+'</div><div class="chat-thread-head-role">'+esc(meta)+'</div></div><button class="chat-mini-btn" title="Abrir mini ventana" onclick="popOutChat(\''+esc(otherUid)+'\')"><svg class="icn sm"><use href="#i-chat"/></svg></button></div><div class="chat-msgs" id="chat-msgs-main">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-input-text" placeholder="Escribí un mensaje..." rows="1"></textarea><button class="chat-send-btn" id="chat-send-btn" aria-label="Enviar"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=G('chat-msgs-main');if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=G('chat-input-text'),btn=G('chat-send-btn');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(otherUid,v);ta.value='';ta.style.height='auto';}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(120,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};ta.focus();}}
 function openChatPage(){renderChatUserList();var s=G('chat-search');if(s&&!s._wired){s._wired=true;s.oninput=function(){renderChatUserList();};}var nb=G('btn-nuevo-chat');if(nb&&!nb._wired){nb._wired=true;nb.onclick=openNewChatModal;}if(chatActiveOther)renderChatThread(chatActiveOther);}
 
 window.openNewChatModal=function(){var mbg=G('mbg-new-chat');if(!mbg)return;mbg.classList.add('on');var s=G('new-chat-search');if(s){s.value='';renderNewChatList('');setTimeout(function(){s.focus();},100);if(!s._wired){s._wired=true;s.oninput=function(){renderNewChatList(this.value);};}}};
-function renderNewChatList(q){var list=G('new-chat-list');if(!list)return;var p=currentProfile;if(!p||!p.uid){list.innerHTML='<div class="new-chat-empty">Iniciá sesión.</div>';return;}q=(q||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&u.name;});if(q){users=users.filter(function(u){var roleStr=(u.role==='admin'?'admin administración':u.role==='gerencia'?'gerencia':u.role==='enc-clasif'?'clasificación clasif':u.role==='encargado'?'encargado':u.role||'').toLowerCase();var secStr=((SECTORS&&u.sector&&SECTORS[u.sector])||u.sector||'').toLowerCase();return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)||roleStr.includes(q)||secStr.includes(q);});}users.sort(function(a,b){return(a.name||'').localeCompare(b.name||'');});if(!users.length){list.innerHTML='<div class="new-chat-empty"><div class="empty-icon">·</div><div style="font-weight:700;color:var(--txt2);margin-bottom:4px">Sin resultados</div><div>'+(q?'Probá con otro nombre, email, rol o sector.':'No hay otros usuarios registrados todavía.')+'</div></div>';return;}list.innerHTML=users.map(function(u){var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="new-chat-item" data-uid="'+esc(u.uid)+'"><span class="avatar">'+esc(chatInitials(u.name))+'</span><div class="body"><div class="name">'+esc(u.name)+'</div><div class="meta">'+esc(meta)+'</div></div><svg class="chev icn sm"><use href="#i-arrow-right"/></svg></div>';}).join('');list.querySelectorAll('.new-chat-item').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;startChatWith(uid);};});}
+function renderNewChatList(q){var list=G('new-chat-list');if(!list)return;var p=currentProfile;if(!p||!p.uid){list.innerHTML='<div class="new-chat-empty">Iniciá sesión.</div>';return;}q=(q||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&(u.name||u.email);});if(q){users=users.filter(function(u){var roleStr=(u.role==='admin'?'admin administración':u.role==='gerencia'?'gerencia':u.role==='enc-clasif'?'clasificación clasif':u.role==='encargado'?'encargado':u.role||'').toLowerCase();var secStr=((SECTORS&&u.sector&&SECTORS[u.sector])||u.sector||'').toLowerCase();return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)||roleStr.includes(q)||secStr.includes(q);});}users.sort(function(a,b){return(a.name||a.email||'').localeCompare(b.name||b.email||'');});if(!users.length){if(!window._usersLoaded){list.innerHTML='<div class="new-chat-empty"><div class="empty-icon">·</div><div style="font-weight:700;color:var(--txt2);margin-bottom:4px">Cargando usuarios…</div><div>Un momento, traemos la lista de personas registradas.</div></div>';if(typeof loadUsersForMention==='function')loadUsersForMention();return;}list.innerHTML='<div class="new-chat-empty"><div class="empty-icon">·</div><div style="font-weight:700;color:var(--txt2);margin-bottom:4px">Sin resultados</div><div>'+(q?'Probá con otro nombre, email, rol o sector.':'No hay otros usuarios registrados todavía.')+'</div></div>';return;}list.innerHTML=users.map(function(u){var displayName=u.name||u.email||'Usuario';var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');if(!u.name&&u.email)meta=[roleLabel,secStr].filter(Boolean).join(' · ')||'Sin nombre cargado';return '<div class="new-chat-item" data-uid="'+esc(u.uid)+'"><span class="avatar">'+esc(chatInitials(displayName))+'</span><div class="body"><div class="name">'+esc(displayName)+'</div><div class="meta">'+esc(meta)+'</div></div><svg class="chev icn sm"><use href="#i-arrow-right"/></svg></div>';}).join('');list.querySelectorAll('.new-chat-item').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;startChatWith(uid);};});}
 function startChatWith(otherUid){chatActiveOther=otherUid;chatLastSeen[otherUid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(otherUid);closeModal('mbg-new-chat');if(!document.getElementById('pg-chat').classList.contains('on'))renderPage('chat');else{renderChatUserList();renderChatThread(otherUid);}updateChatBadge();}
 window.popOutChat=function(uid){if(chatActiveOther===uid)chatActiveOther=null;chatMiniOpen[uid]={minimized:false};subscribeChat(uid);renderChatDock();renderChatUserList();var t=G('chat-thread');if(t)t.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Conversación abierta en mini ventana</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Mirá abajo a la derecha. Tocá otra persona para empezar otra conversación.</div></div>';};
 window.closeMiniChat=function(uid){delete chatMiniOpen[uid];unsubscribeChat(uid);renderChatDock();updateChatBadge();};
@@ -2260,7 +2494,7 @@ function updateChatBadge(){var p=currentProfile;if(!p||!p.uid)return;var unread=
 // Cuando se cargan los usuarios, suscribirse pasivamente al chat con cada uno para tener previews y badge actualizado.
 function subscribeAllChatsLight(){var p=currentProfile;if(!p||!p.uid)return;(window.allUsers||[]).forEach(function(u){if(!u||!u.uid||u.uid===p.uid)return;subscribeChat(u.uid);});}
 // Engancho al loadUsersForMention para que la lista se renderice y se suscriban los chats
-var _origLoadUsers=loadUsersForMention;loadUsersForMention=function(){fbDb.ref('users').once('value').then(function(snap){var d=snap.val()||{};allUsers=Object.values(d).filter(function(u){return u&&u.name;});subscribeAllChatsLight();renderChatUserList();updateChatBadge();});};
+var _origLoadUsers=loadUsersForMention;window._usersLoaded=false;window._usersListenerWired=false;loadUsersForMention=function(){if(window._usersListenerWired)return;window._usersListenerWired=true;fbDb.ref('users').on('value',function(snap){var d=snap.val()||{};allUsers=Object.keys(d).map(function(k){var u=Object.assign({},d[k]||{});if(!u.uid)u.uid=k;return u;}).filter(function(u){return u&&u.uid&&(u.name||u.email);});window._usersLoaded=true;subscribeAllChatsLight();renderChatUserList();var ncm=G('mbg-new-chat');if(ncm&&ncm.classList.contains('on')){var s=G('new-chat-search');renderNewChatList(s?s.value:'');}updateChatBadge();});};
 
 })();
 </script>
