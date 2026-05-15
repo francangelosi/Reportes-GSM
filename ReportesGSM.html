@@ -775,6 +775,8 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
 }
 .chat-msg.in{background:#F5F0E1;border:1px solid var(--border);align-self:flex-start;color:var(--txt);border-bottom-left-radius:4px}
 .chat-msg.out{background:var(--verde);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.chat-msg.emoji-only{background:transparent !important;border:none !important;box-shadow:none !important;padding:2px 4px !important;font-size:42px !important;line-height:1.15 !important;letter-spacing:.02em}
+.chat-mini .chat-msg.emoji-only{font-size:34px !important}
 .chat-msg-meta{font-size:10.5px;color:var(--txt3);margin-top:3px;padding:0 4px;letter-spacing:.01em}
 .chat-msg.out + .chat-msg-meta{text-align:right}
 .chat-day-sep{align-self:center;font-size:10.5px;color:var(--txt3);background:var(--bg2);border:1px solid var(--border);padding:3px 10px;border-radius:999px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;margin:6px 0}
@@ -842,6 +844,47 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
 .chat-mini .chat-input{padding:8px 10px}
 .chat-mini .chat-input textarea{min-height:34px;padding:8px 12px;font-size:13px}
 .chat-mini .chat-send-btn{width:34px;height:34px}
+
+/* EMOJI PICKER */
+.emoji-trigger{
+  width:38px;height:38px;border-radius:10px;
+  background:transparent;border:1px solid var(--border);cursor:pointer;
+  font-size:20px;display:flex;align-items:center;justify-content:center;
+  padding:0;flex-shrink:0;transition:background .12s, border-color .12s;
+  line-height:1;
+}
+.emoji-trigger:hover{background:var(--bg3);border-color:var(--verde-borde)}
+.chat-mini .emoji-trigger{width:32px;height:32px;font-size:16px}
+#emoji-picker{
+  position:fixed;display:none;z-index:1500;
+  width:320px;max-height:340px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 12px 32px rgba(38,52,31,.20);
+  overflow:hidden;display:none;
+  flex-direction:column;font-family:var(--font-sans);
+}
+#emoji-picker[style*="display: block"]{display:flex !important}
+.emoji-tabs{
+  display:flex;gap:2px;padding:6px;border-bottom:1px solid var(--border);
+  background:var(--bg3);flex-shrink:0;
+}
+.emoji-tab{
+  flex:1;padding:6px 0;font-size:18px;background:transparent;
+  border:none;border-radius:8px;cursor:pointer;line-height:1;
+}
+.emoji-tab:hover{background:var(--bg2)}
+.emoji-tab.on{background:var(--peach-claro);box-shadow:0 1px 3px rgba(38,52,31,.08)}
+.emoji-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:2px;
+  padding:8px;overflow-y:auto;flex:1;
+}
+.emoji-cell{
+  width:34px;height:34px;font-size:22px;background:transparent;
+  border:none;border-radius:8px;cursor:pointer;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .1s;line-height:1;
+}
+.emoji-cell:hover{background:var(--bg3)}
 @media(max-width:600px){
   .chat-dock{right:0;left:0;flex-direction:column;align-items:stretch;gap:0}
   .chat-mini{width:100%;height:64vh;border-radius:14px 14px 0 0}
@@ -1562,7 +1605,7 @@ G('l-pass').onkeydown=function(e){if(e.key==='Enter')G('btn-login').click();};
 G('link-forgot').onclick=function(e){e.preventDefault();var email=(G('l-email').value||'').trim();var err=G('l-err');err.classList.remove('on');err.className='err';if(!email){err.textContent='Ingresá tu email arriba y luego clickeá «Olvidaste tu contraseña?»';err.classList.add('on');G('l-email').focus();return;}if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Ingresá un email válido.';err.classList.add('on');return;}var link=G('link-forgot');var origTxt=link.textContent;link.textContent='Enviando…';link.style.pointerEvents='none';fbAuth.sendPasswordResetEmail(email).then(function(){err.className='err ok on';err.style.background='#E8F1E2';err.style.color='#2E5731';err.style.border='1px solid #B9D4A8';err.textContent='Te enviamos un email a '+email+' con un link para restablecer la contraseña. Revisá tu bandeja de entrada y spam.';link.textContent=origTxt;link.style.pointerEvents='';}).catch(function(e){var msg='No se pudo enviar el email.';if(e.code==='auth/user-not-found')msg='No existe una cuenta con ese email.';else if(e.code==='auth/invalid-email')msg='Email inválido.';else if(e.code==='auth/too-many-requests')msg='Demasiados intentos. Esperá unos minutos.';err.textContent=msg;err.classList.add('on');link.textContent=origTxt;link.style.pointerEvents='';});};
 G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.value=code;if(code.length<3){G('r-sector-preview').style.display='none';return;}fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(inv&&inv.active){G('r-sector-display').value=(SECTORS[inv.sector]||inv.sector)+' - '+inv.role;G('r-sector-preview').style.display='block';}else G('r-sector-preview').style.display='none';});};
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value.trim();var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';var newProfile=null;fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){newProfile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(newProfile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';// Si el usuario ya fue logueado automáticamente por Firebase, forzar onLoggedIn con el perfil correcto
-if(fbAuth.currentUser&&newProfile){currentProfile=newProfile;currentProfile.uid=fbAuth.currentUser.uid;onLoggedIn();}}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';if(e.code==='auth/weak-password')msg='La contrasena debe tener al menos 6 caracteres.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
+if(fbAuth.currentUser&&newProfile){currentProfile=newProfile;currentProfile.uid=fbAuth.currentUser.uid;onLoggedIn();}}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';if(e.code==='auth/weak-password')msg='La contrasena debe tener al menos 6 caracteres.';if(e.code==='auth/network-request-failed')msg='Sin conexión a internet. Revisá tu wifi y reintentá.';if(e.message&&e.message.toLowerCase().indexOf('permission_denied')>=0)msg='No se pudo registrar el código. Avisale al administrador.';console.error('GSM registro: error',e);err.textContent=msg+' ('+(e.code||e.message||'sin detalle')+')';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(e){console.error('GSM registro: error leyendo invitación',e);var msg='No se pudo verificar el código.';if(e&&e.message&&e.message.toLowerCase().indexOf('permission')>=0)msg='Las reglas de Firebase no permiten verificar códigos sin estar logueado. Avisale al administrador para que actualice las reglas.';err.textContent=msg+' ('+(e&&(e.code||e.message)||'sin detalle')+')';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
 G('btn-logout').onclick=function(){fbAuth.signOut();};
 function onLoggedIn(){var p=currentProfile;var nm=p.name||p.email||'Usuario';
   var nameEl=G('nav-user-name');if(nameEl)nameEl.textContent=nm;
@@ -2465,6 +2508,7 @@ function saveChatLastSeen(o){try{localStorage.setItem(CHAT_LASTSEEN_KEY,JSON.str
 var chatLastSeen=loadChatLastSeen();
 function chatId(a,b){return [a,b].sort().join('__');}
 function chatInitials(name){var p=String(name||'').trim().split(/\s+/);return ((p[0]?p[0][0]:'')+(p[1]?p[1][0]:'')).toUpperCase()||'?';}
+function isEmojiOnly(s){if(!s)return false;var t=String(s).trim();if(!t)return false;try{var stripped=t.replace(/[\p{Extended_Pictographic}\p{Emoji_Component}\u200d\ufe0f\s]/gu,'');return stripped.length===0&&t.length<=24;}catch(e){return false;}}
 function chatFmtTime(ts){if(!ts)return '';var d=new Date(ts);var now=new Date();var sameDay=d.toDateString()===now.toDateString();if(sameDay)return d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});var diff=(now-d)/86400000;if(diff<7)return d.toLocaleDateString('es-AR',{weekday:'short',hour:'2-digit',minute:'2-digit'});return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
 function chatDayLabel(ts){if(!ts)return '';var d=new Date(ts);var now=new Date();var msPerDay=86400000;var startToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();var dDay=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();if(dDay===startToday)return 'Hoy';if(startToday-dDay===msPerDay)return 'Ayer';if(startToday-dDay<7*msPerDay)return d.toLocaleDateString('es-AR',{weekday:'long'});return d.toLocaleDateString('es-AR');}
 function subscribeChat(otherUid){var p=currentProfile;if(!p||!p.uid)return;var id=chatId(p.uid,otherUid);if(chatSubs[id])return chatSubs[id];var ref=fbDb.ref('chats/'+id+'/messages');var sub={ref:ref,otherUid:otherUid,messages:[],listener:null};chatSubs[id]=sub;sub.listener=ref.on('value',function(snap){var data=snap.val()||{};sub.messages=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});sub.messages.sort(function(a,b){return(a.timestamp||0)-(b.timestamp||0);});onChatUpdated(otherUid);});return sub;}
@@ -2473,7 +2517,7 @@ function onChatUpdated(otherUid){if(chatActiveOther===otherUid)renderChatThread(
 function sendChatMessage(otherUid,body){var p=currentProfile;if(!p||!p.uid)return;body=String(body||'').trim();if(!body)return;var id=chatId(p.uid,otherUid);var entry={authorUid:p.uid,authorName:p.name||p.email||'Usuario',body:body,timestamp:Date.now()};fbDb.ref('chats/'+id+'/messages').push(entry);chatLastSeen[otherUid]=Date.now();saveChatLastSeen(chatLastSeen);}
 function findUserByUid(uid){var u=(window.allUsers||[]).find(function(x){return x.uid===uid;});if(u)return u;if(window._adminUsers&&_adminUsers[uid])return _adminUsers[uid];return null;}
 function renderChatUserList(){var container=G('chat-userlist-items');if(!container)return;var p=currentProfile;if(!p||!p.uid){container.innerHTML='<div class="empty">Iniciá sesión.</div>';return;}var q=(G('chat-search').value||'').toLowerCase().trim();var users=(window.allUsers||[]).filter(function(u){return u&&u.uid&&u.uid!==p.uid&&(u.name||u.email);});if(q)users=users.filter(function(u){return(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q);});users.sort(function(a,b){var aId=chatId(p.uid,a.uid),bId=chatId(p.uid,b.uid);var aLast=chatSubs[aId]&&chatSubs[aId].messages.length?chatSubs[aId].messages[chatSubs[aId].messages.length-1].timestamp:0;var bLast=chatSubs[bId]&&chatSubs[bId].messages.length?chatSubs[bId].messages[chatSubs[bId].messages.length-1].timestamp:0;if(aLast||bLast)return bLast-aLast;return (a.name||'').localeCompare(b.name||'');});container.innerHTML=users.map(function(u){var id=chatId(p.uid,u.uid);var sub=chatSubs[id];var lastMsg=sub&&sub.messages.length?sub.messages[sub.messages.length-1]:null;var preview=lastMsg?(lastMsg.authorUid===p.uid?'Vos: ':'')+(lastMsg.body||'').slice(0,40):'Iniciar conversación';var time=lastMsg?chatFmtTime(lastMsg.timestamp):'';var hasUnread=lastMsg&&lastMsg.authorUid!==p.uid&&(!chatLastSeen[u.uid]||chatLastSeen[u.uid]<lastMsg.timestamp);var active=chatActiveOther===u.uid;var roleLabel=(u.role==='admin'?'Admin':u.role==='gerencia'?'Gerencia':u.role==='enc-clasif'?'Clasif.':u.role==='encargado'?'Encargado':u.role||'');var secStr=(SECTORS&&u.sector&&SECTORS[u.sector])?SECTORS[u.sector]:(u.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ')||(u.email||'');return '<div class="chat-user'+(active?' active':'')+(hasUnread?' has-unread':'')+'" data-uid="'+esc(u.uid)+'"><span class="chat-user-avatar">'+esc(chatInitials(u.name||u.email))+'</span><div class="chat-user-body"><div class="chat-user-name">'+esc(u.name||u.email||'Usuario')+'</div><div class="chat-user-meta">'+esc(preview)+(time?' · '+esc(time):'')+'</div></div><span class="chat-user-unread"></span></div>';}).join('')||'<div class="empty" style="padding:30px 16px"><div style="font-weight:600;color:var(--txt2);margin-bottom:4px">'+(!window._usersLoaded?'Cargando usuarios…':window._usersLoadError?'Error al cargar':'Sin usuarios')+'</div><div style="font-size:12px;color:var(--txt3);margin-bottom:10px">'+(!window._usersLoaded?'Un momento, traemos la lista.':window._usersLoadError?esc(String(window._usersLoadError)):'No hay otros usuarios registrados todavía.')+'</div>'+(window._usersLoaded?'<button class="ib sm" onclick="_reloadChatUsers()">Reintentar</button>':'')+'</div>';container.querySelectorAll('.chat-user').forEach(function(el){el.onclick=function(){var uid=el.dataset.uid;chatActiveOther=uid;chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);subscribeChat(uid);renderChatUserList();renderChatThread(uid);updateChatBadge();};});}
-function renderChatThread(otherUid){var thread=G('chat-thread');if(!thread)return;var p=currentProfile;var other=findUserByUid(otherUid);if(!other){thread.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Seleccioná una conversación</div></div>';return;}var sub=subscribeChat(otherUid);var msgs=sub.messages||[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+'">'+esc(m.body)+'</div><div class="chat-msg-meta" style="'+(out?'align-self:flex-end':'align-self:flex-start')+'">'+esc(chatFmtTime(m.timestamp))+'</div>';});if(!msgs.length)msgsHtml='<div class="chat-empty"><div style="font-weight:600;color:var(--txt2)">Sin mensajes todavía</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Escribí algo abajo para empezar.</div></div>';var roleLabel=(other.role==='admin'?'Admin':other.role==='gerencia'?'Gerencia':other.role==='enc-clasif'?'Clasif.':other.role==='encargado'?'Encargado':other.role||'');var secStr=(SECTORS&&other.sector&&SECTORS[other.sector])?SECTORS[other.sector]:(other.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ');thread.innerHTML='<div class="chat-thread-head"><span class="chat-user-avatar">'+esc(chatInitials(other.name))+'</span><div style="flex:1;min-width:0"><div class="chat-thread-head-name">'+esc(other.name)+'</div><div class="chat-thread-head-role">'+esc(meta)+'</div></div><button class="chat-mini-btn" title="Abrir mini ventana" onclick="popOutChat(\''+esc(otherUid)+'\')"><svg class="icn sm"><use href="#i-chat"/></svg></button></div><div class="chat-msgs" id="chat-msgs-main">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-input-text" placeholder="Escribí un mensaje..." rows="1"></textarea><button class="chat-send-btn" id="chat-send-btn" aria-label="Enviar"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=G('chat-msgs-main');if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=G('chat-input-text'),btn=G('chat-send-btn');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(otherUid,v);ta.value='';ta.style.height='auto';}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(120,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};ta.focus();}}
+function renderChatThread(otherUid){var thread=G('chat-thread');if(!thread)return;var p=currentProfile;var other=findUserByUid(otherUid);if(!other){thread.innerHTML='<div class="chat-empty"><svg class="icn lg" style="opacity:.4;width:32px;height:32px"><use href="#i-chat"/></svg><div style="font-weight:700;color:var(--txt2);margin-top:10px">Seleccioná una conversación</div></div>';return;}var sub=subscribeChat(otherUid);var msgs=sub.messages||[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+(isEmojiOnly(m.body)?' emoji-only':'')+'">'+esc(m.body)+'</div><div class="chat-msg-meta" style="'+(out?'align-self:flex-end':'align-self:flex-start')+'">'+esc(chatFmtTime(m.timestamp))+'</div>';});if(!msgs.length)msgsHtml='<div class="chat-empty"><div style="font-weight:600;color:var(--txt2)">Sin mensajes todavía</div><div style="font-size:12px;color:var(--txt3);margin-top:4px">Escribí algo abajo para empezar.</div></div>';var roleLabel=(other.role==='admin'?'Admin':other.role==='gerencia'?'Gerencia':other.role==='enc-clasif'?'Clasif.':other.role==='encargado'?'Encargado':other.role||'');var secStr=(SECTORS&&other.sector&&SECTORS[other.sector])?SECTORS[other.sector]:(other.sector||'');var meta=[roleLabel,secStr].filter(Boolean).join(' · ');thread.innerHTML='<div class="chat-thread-head"><span class="chat-user-avatar">'+esc(chatInitials(other.name))+'</span><div style="flex:1;min-width:0"><div class="chat-thread-head-name">'+esc(other.name)+'</div><div class="chat-thread-head-role">'+esc(meta)+'</div></div><button class="chat-mini-btn" title="Abrir mini ventana" onclick="popOutChat(\''+esc(otherUid)+'\')"><svg class="icn sm"><use href="#i-chat"/></svg></button></div><div class="chat-msgs" id="chat-msgs-main">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-input-text" placeholder="Escribí un mensaje..." rows="1"></textarea><button class="chat-send-btn" id="chat-send-btn" aria-label="Enviar"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=G('chat-msgs-main');if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=G('chat-input-text'),btn=G('chat-send-btn');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(otherUid,v);ta.value='';ta.style.height='auto';}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(120,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};ta.focus();}}
 function openChatPage(){renderChatUserList();var s=G('chat-search');if(s&&!s._wired){s._wired=true;s.oninput=function(){renderChatUserList();};}var nb=G('btn-nuevo-chat');if(nb&&!nb._wired){nb._wired=true;nb.onclick=openNewChatModal;}if(chatActiveOther)renderChatThread(chatActiveOther);}
 
 window.openNewChatModal=function(){var mbg=G('mbg-new-chat');if(!mbg)return;mbg.classList.add('on');var s=G('new-chat-search');if(s){s.value='';renderNewChatList('');setTimeout(function(){s.focus();},100);if(!s._wired){s._wired=true;s.oninput=function(){renderNewChatList(this.value);};}}};
@@ -2483,7 +2527,7 @@ window.popOutChat=function(uid){if(chatActiveOther===uid)chatActiveOther=null;ch
 window.closeMiniChat=function(uid){delete chatMiniOpen[uid];unsubscribeChat(uid);renderChatDock();updateChatBadge();};
 window.toggleMiniChat=function(uid){if(!chatMiniOpen[uid])return;chatMiniOpen[uid].minimized=!chatMiniOpen[uid].minimized;if(!chatMiniOpen[uid].minimized){chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}renderChatDock();updateChatBadge();};
 function renderChatDock(){var dock=G('chat-dock');if(!dock)return;var keys=Object.keys(chatMiniOpen);if(!keys.length){dock.style.display='none';dock.innerHTML='';return;}dock.style.display='flex';dock.innerHTML=keys.map(function(uid){var s=chatMiniOpen[uid];var u=findUserByUid(uid)||{name:'Usuario',uid:uid};var sub=chatSubs[chatId(currentProfile.uid,uid)];var lastMsg=sub&&sub.messages.length?sub.messages[sub.messages.length-1]:null;var hasUnread=lastMsg&&lastMsg.authorUid!==currentProfile.uid&&(!chatLastSeen[uid]||chatLastSeen[uid]<lastMsg.timestamp)&&s.minimized;return '<div class="chat-mini'+(s.minimized?' minimized':'')+(hasUnread?' has-unread':'')+'" data-uid="'+esc(uid)+'"><div class="chat-mini-head" data-toggle="1"><span class="chat-user-avatar">'+esc(chatInitials(u.name))+'</span><div class="chat-mini-head-name">'+esc(u.name)+'<span class="unread-dot"></span></div><div class="chat-mini-actions"><button class="chat-mini-btn" data-action="toggle" title="'+(s.minimized?'Expandir':'Minimizar')+'"><svg class="icn sm"><use href="#i-minimize"/></svg></button><button class="chat-mini-btn" data-action="close" title="Cerrar"><svg class="icn sm"><use href="#i-close"/></svg></button></div></div><div class="chat-mini-body" data-body="1"></div></div>';}).join('');dock.querySelectorAll('.chat-mini').forEach(function(el){var uid=el.dataset.uid;el.querySelector('[data-toggle="1"]').onclick=function(e){if(e.target.closest('[data-action]'))return;toggleMiniChat(uid);};el.querySelector('[data-action="toggle"]').onclick=function(e){e.stopPropagation();toggleMiniChat(uid);};el.querySelector('[data-action="close"]').onclick=function(e){e.stopPropagation();closeMiniChat(uid);};});keys.forEach(function(uid){if(!chatMiniOpen[uid].minimized)renderChatMini(uid);});}
-function renderChatMini(uid){var dock=G('chat-dock');if(!dock)return;var miniEl=dock.querySelector('.chat-mini[data-uid="'+uid+'"]');if(!miniEl)return;var body=miniEl.querySelector('[data-body="1"]');if(!body||chatMiniOpen[uid].minimized)return;var p=currentProfile;var sub=chatSubs[chatId(p.uid,uid)];var msgs=sub?sub.messages:[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+'">'+esc(m.body)+'</div>';});if(!msgs.length)msgsHtml='<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 10px">Sin mensajes todavía. Escribí algo abajo.</div>';body.innerHTML='<div class="chat-msgs" id="chat-mini-msgs-'+esc(uid)+'">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-mini-input-'+esc(uid)+'" placeholder="Escribí..." rows="1"></textarea><button class="chat-send-btn" data-send="'+esc(uid)+'"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=document.getElementById('chat-mini-msgs-'+uid);if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=document.getElementById('chat-mini-input-'+uid);var btn=body.querySelector('[data-send="'+uid+'"]');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(uid,v);ta.value='';ta.style.height='auto';chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(100,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};}chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}
+function renderChatMini(uid){var dock=G('chat-dock');if(!dock)return;var miniEl=dock.querySelector('.chat-mini[data-uid="'+uid+'"]');if(!miniEl)return;var body=miniEl.querySelector('[data-body="1"]');if(!body||chatMiniOpen[uid].minimized)return;var p=currentProfile;var sub=chatSubs[chatId(p.uid,uid)];var msgs=sub?sub.messages:[];var msgsHtml='';var lastDay='';msgs.forEach(function(m){var dayKey=m.timestamp?new Date(m.timestamp).toDateString():'';if(dayKey&&dayKey!==lastDay){msgsHtml+='<div class="chat-day-sep">'+esc(chatDayLabel(m.timestamp))+'</div>';lastDay=dayKey;}var out=m.authorUid===p.uid;msgsHtml+='<div class="chat-msg '+(out?'out':'in')+(isEmojiOnly(m.body)?' emoji-only':'')+'">'+esc(m.body)+'</div>';});if(!msgs.length)msgsHtml='<div style="text-align:center;color:var(--txt3);font-size:12px;padding:30px 10px">Sin mensajes todavía. Escribí algo abajo.</div>';body.innerHTML='<div class="chat-msgs" id="chat-mini-msgs-'+esc(uid)+'">'+msgsHtml+'</div><div class="chat-input"><textarea id="chat-mini-input-'+esc(uid)+'" placeholder="Escribí..." rows="1"></textarea><button class="chat-send-btn" data-send="'+esc(uid)+'"><svg class="icn sm" style="stroke:#fff"><use href="#i-send"/></svg></button></div>';var msgsEl=document.getElementById('chat-mini-msgs-'+uid);if(msgsEl)msgsEl.scrollTop=msgsEl.scrollHeight;var ta=document.getElementById('chat-mini-input-'+uid);var btn=body.querySelector('[data-send="'+uid+'"]');function sendAndClear(){var v=ta.value;if(!v.trim())return;sendChatMessage(uid,v);ta.value='';ta.style.height='auto';chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}if(btn)btn.onclick=sendAndClear;if(ta){ta.oninput=function(){this.style.height='auto';this.style.height=Math.min(100,this.scrollHeight)+'px';};ta.onkeydown=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAndClear();}};}chatLastSeen[uid]=Date.now();saveChatLastSeen(chatLastSeen);}
 function updateChatBadge(){var p=currentProfile;if(!p||!p.uid)return;var unread=0;(window.allUsers||[]).forEach(function(u){if(!u||!u.uid||u.uid===p.uid)return;var id=chatId(p.uid,u.uid);var sub=chatSubs[id];if(!sub||!sub.messages.length)return;var last=sub.messages[sub.messages.length-1];if(last.authorUid===p.uid)return;if(chatLastSeen[u.uid]&&chatLastSeen[u.uid]>=last.timestamp)return;unread++;});var nb=G('nav-badge-chat');if(nb){if(unread>0){nb.textContent=unread;nb.style.display='inline-block';}else{nb.style.display='none';}}}
 // Cuando se cargan los usuarios, suscribirse pasivamente al chat con cada uno para tener previews y badge actualizado.
 function subscribeAllChatsLight(){var p=currentProfile;if(!p||!p.uid)return;(window.allUsers||[]).forEach(function(u){if(!u||!u.uid||u.uid===p.uid)return;subscribeChat(u.uid);});}
@@ -2513,6 +2557,102 @@ loadUsersForMention=function(){
     _refreshChatSurfaces();
   });
 };
+
+// ===== EMOJI PICKER =====
+(function(){
+var EMOJI_CATS=[
+ {name:'Caritas',emojis:'😀 😃 😄 😁 😆 😅 🤣 😂 🙂 🙃 😉 😊 😇 🥰 😍 🤩 😘 😗 😚 😙 😋 😛 😜 🤪 😝 🤑 🤗 🤭 🤫 🤔 🤐 🤨 😐 😑 😶 😏 😒 🙄 😬 🤥 😌 😔 😪 🤤 😴 😷 🤒 🤕 🤧 🥵 🥶 🥴 😵 🤯 🤠 🥳 😎 🤓 🧐 😕 😟 🙁 ☹️ 😮 😯 😲 😳 🥺 😦 😧 😨 😰 😥 😢 😭 😱 😖 😣 😞 😓 😩 😫 🥱 😤 😡 😠 🤬 😈 👿'.split(' ')},
+ {name:'Gestos',emojis:'👍 👎 👌 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ ✋ 🤚 🖐️ 🖖 👋 🤝 👏 🙌 🙏 ✍️ 💪 🦾 🦿 🦵 🦶 👂 👃 🧠 🫀 👀 👁️ 👅 👄 💋 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟'.split(' ')},
+ {name:'Trabajo',emojis:'✅ ❌ ⚠️ 🚨 🔴 🟠 🟡 🟢 🔵 🟣 ⭐ ⚡ 🔥 💯 ✨ 🎉 🎊 🏆 🥇 🥈 🥉 📌 📍 📎 🔧 🔨 ⚒️ 🛠️ ⚙️ 🧰 🔩 🔌 💡 🔦 📞 📲 📧 📩 📨 📥 📤 📦 📋 📊 📈 📉 📅 📆 🗓️ ⏰ ⏱️ ⏲️ 🕐 ✏️ 📝 📃 📄 📑 🗂️ 📁 📂 🗃️ 🗄️ 🗑️ 🔒 🔓 🔑'.split(' ')},
+ {name:'Comida',emojis:'🍞 🥖 🥨 🥐 🥯 🧀 🥚 🍳 🥓 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🥪 🌮 🌯 🥙 🧆 🍝 🍜 🍲 🍛 🍱 🍣 🍤 🍙 🍚 🍘 🥠 🍢 🍡 🍧 🍨 🍦 🍰 🎂 🧁 🥧 🍮 🍭 🍬 🍫 🍿 🍪 🥛 🧃 ☕ 🍵 🧉 🥤 🍶 🍺 🍻 🍷 🥂 🥃 🍸 🍹 🍾 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🥑 🍆 🥔 🥕 🌽 🌶️ 🥒 🥬 🥦 🧄 🧅 🍄 🥜 🌰'.split(' ')},
+ {name:'Animales',emojis:'🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐮 🐷 🐽 🐸 🐵 🙈 🙉 🙊 🐒 🐔 🐧 🐦 🐤 🐣 🐥 🦆 🦅 🦉 🦇 🐺 🐗 🐴 🦄 🐝 🪱 🐛 🦋 🐌 🐞 🐜 🪰 🪲 🪳 🦟 🦗 🕷️ 🦂 🐢 🐍 🦎 🦖 🦕 🐙 🦑 🦐 🦞 🦀 🐡 🐠 🐟 🐬 🐳 🐋 🦈 🐊 🐅 🐆 🦓 🦍 🦧 🐘 🦛 🦏 🐪 🐫 🦒 🦘 🐃 🐂 🐄 🐎 🐖 🐏 🐑 🦙 🐐 🦌 🐕 🐩 🦮 🐕‍🦺 🐈 🐈‍⬛ 🪶 🐓 🦃 🦚 🦜 🦢 🦩 🕊️ 🐇 🦝 🦨 🦡 🦫 🦦 🦥 🐁 🐀 🐿️ 🦔'.split(' ')},
+ {name:'Objetos',emojis:'⚽ 🏀 🏈 ⚾ 🥎 🎾 🏐 🏉 🥏 🎱 🪀 🏓 🏸 🥅 ⛳ 🪁 🏹 🎣 🤿 🥊 🥋 🎽 🛹 🛷 ⛸️ 🥌 🎿 ⛷️ 🏂 🪂 🏋️ 🤼 🤸 ⛹️ 🤺 🤾 🏌️ 🏇 🧘 🏄 🏊 🤽 🚣 🧗 🚵 🚴 🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🚜 🛵 🏍️ 🛺 🚲 🛴 🛹 🚂 ✈️ 🚀 🛸 ⛵ 🛶 🚤 ⛴️ 🛥️ 🚢 🌍 🌎 🌏 🗺️ 🏠 🏡 🏢 🏣 🏤 🏥 🏦 🏨 🏩 🏪 🏫 🏬 🏭 🏯 🏰 🗼 🗽 ⛪ 🕌 🛕 🕍 ⛩️ 🕋 ⛲ ⛺ 🌁 🌃 🏙️ 🌄 🌅 🌆 🌇 🌉 ♨️ 🎠 🎡 🎢 💈 🎪'.split(' ')}
+];
+var emojiActiveTextarea=null;var pickerEl=null;
+function ensurePicker(){
+  if(pickerEl)return pickerEl;
+  pickerEl=document.createElement('div');
+  pickerEl.id='emoji-picker';
+  pickerEl.innerHTML='<div class="emoji-tabs"></div><div class="emoji-grid"></div>';
+  document.body.appendChild(pickerEl);
+  var tabs=pickerEl.querySelector('.emoji-tabs');
+  var grid=pickerEl.querySelector('.emoji-grid');
+  EMOJI_CATS.forEach(function(cat,i){
+    var t=document.createElement('button');t.type='button';t.className='emoji-tab'+(i===0?' on':'');t.textContent=cat.emojis[0];t.title=cat.name;
+    t.onclick=function(){pickerEl.querySelectorAll('.emoji-tab').forEach(function(x){x.classList.remove('on');});t.classList.add('on');renderCat(i);};
+    tabs.appendChild(t);
+  });
+  function renderCat(i){
+    grid.innerHTML='';
+    EMOJI_CATS[i].emojis.forEach(function(e){
+      var b=document.createElement('button');b.type='button';b.className='emoji-cell';b.textContent=e;
+      b.onclick=function(ev){ev.preventDefault();ev.stopPropagation();insertEmoji(e);};
+      grid.appendChild(b);
+    });
+  }
+  renderCat(0);
+  // Close on outside click
+  document.addEventListener('mousedown',function(e){
+    if(!pickerEl||pickerEl.style.display==='none')return;
+    if(pickerEl.contains(e.target))return;
+    if(e.target.classList&&e.target.classList.contains('emoji-trigger'))return;
+    pickerEl.style.display='none';
+  });
+  return pickerEl;
+}
+function insertEmoji(em){
+  var ta=emojiActiveTextarea;if(!ta)return;
+  var s=ta.selectionStart||0,e=ta.selectionEnd||0;
+  var v=ta.value;
+  ta.value=v.slice(0,s)+em+v.slice(e);
+  ta.selectionStart=ta.selectionEnd=s+em.length;
+  ta.focus();
+  // dispatch input so autoresize handlers fire
+  ta.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function positionPicker(btn){
+  var p=ensurePicker();
+  var r=btn.getBoundingClientRect();
+  p.style.display='block';
+  // measure
+  var pw=p.offsetWidth||320,ph=p.offsetHeight||340;
+  var top=r.top-ph-8;
+  if(top<8)top=r.bottom+8;
+  var left=r.left;
+  if(left+pw>window.innerWidth-8)left=window.innerWidth-pw-8;
+  if(left<8)left=8;
+  p.style.top=top+'px';p.style.left=left+'px';
+}
+function injectEmojiButton(inputContainer){
+  if(!inputContainer||inputContainer.querySelector('.emoji-trigger'))return;
+  var ta=inputContainer.querySelector('textarea');if(!ta)return;
+  var btn=document.createElement('button');
+  btn.type='button';btn.className='emoji-trigger';btn.title='Insertar emoji';btn.textContent='😀';
+  btn.onclick=function(ev){
+    ev.preventDefault();ev.stopPropagation();
+    emojiActiveTextarea=ta;
+    var p=ensurePicker();
+    if(p.style.display==='block'){p.style.display='none';return;}
+    positionPicker(btn);
+  };
+  // insert before the send button
+  var sendBtn=inputContainer.querySelector('.chat-send-btn');
+  if(sendBtn)inputContainer.insertBefore(btn,sendBtn);else inputContainer.appendChild(btn);
+}
+// Observe DOM for chat-input nodes
+var emojiObs=new MutationObserver(function(muts){
+  muts.forEach(function(m){
+    m.addedNodes.forEach(function(n){
+      if(n.nodeType!==1)return;
+      if(n.classList&&n.classList.contains('chat-input'))injectEmojiButton(n);
+      n.querySelectorAll&&n.querySelectorAll('.chat-input').forEach(injectEmojiButton);
+    });
+  });
+});
+emojiObs.observe(document.body,{childList:true,subtree:true});
+// initial pass
+document.querySelectorAll('.chat-input').forEach(injectEmojiButton);
+})();
 
 })();
 </script>
