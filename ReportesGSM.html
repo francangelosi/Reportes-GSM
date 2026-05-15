@@ -997,6 +997,7 @@ tr:hover td{background:var(--bg3)}
         <div class="fg"><label class="fl">Contraseña</label><input type="password" id="l-pass" placeholder="••••••••"/></div>
         <button class="btn pri" id="btn-login">Ingresar</button>
         <div class="err" id="l-err"></div>
+        <div style="text-align:center;margin-top:12px"><a href="#" id="link-forgot" style="color:var(--verde);font-size:13px;text-decoration:none;font-weight:600">¿Olvidaste tu contraseña?</a></div>
       </div>
       <div class="auth-panel" id="panel-register">
         <div class="info-box">Necesitás un <strong>código de invitación</strong> para registrarte. Pedíselo al administrador del sistema.</div>
@@ -1558,6 +1559,7 @@ fbAuth.onAuthStateChanged(function(user){if(user){currentUser=user;fbDb.ref('use
 window.switchAuth=function(tab){G('panel-login').classList.toggle('on',tab==='login');G('panel-register').classList.toggle('on',tab==='register');G('tab-login-btn').classList.toggle('active',tab==='login');G('tab-reg-btn').classList.toggle('active',tab==='register');G('l-err').classList.remove('on');G('r-err').classList.remove('on');G('r-ok').classList.remove('on');};
 G('btn-login').onclick=function(){var email=G('l-email').value.trim(),pass=G('l-pass').value,err=G('l-err');err.classList.remove('on');if(!email||!pass){err.textContent='Completa email y contrasena.';err.classList.add('on');return;}G('btn-login').disabled=true;G('btn-login').innerHTML='<span class="spin"></span> Ingresando...';fbAuth.signInWithEmailAndPassword(email,pass).catch(function(){err.textContent='Email o contrasena incorrectos.';err.classList.add('on');G('btn-login').disabled=false;G('btn-login').textContent='Ingresar';});};
 G('l-pass').onkeydown=function(e){if(e.key==='Enter')G('btn-login').click();};
+G('link-forgot').onclick=function(e){e.preventDefault();var email=(G('l-email').value||'').trim();var err=G('l-err');err.classList.remove('on');err.className='err';if(!email){err.textContent='Ingresá tu email arriba y luego clickeá «Olvidaste tu contraseña?»';err.classList.add('on');G('l-email').focus();return;}if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent='Ingresá un email válido.';err.classList.add('on');return;}var link=G('link-forgot');var origTxt=link.textContent;link.textContent='Enviando…';link.style.pointerEvents='none';fbAuth.sendPasswordResetEmail(email).then(function(){err.className='err ok on';err.style.background='#E8F1E2';err.style.color='#2E5731';err.style.border='1px solid #B9D4A8';err.textContent='Te enviamos un email a '+email+' con un link para restablecer la contraseña. Revisá tu bandeja de entrada y spam.';link.textContent=origTxt;link.style.pointerEvents='';}).catch(function(e){var msg='No se pudo enviar el email.';if(e.code==='auth/user-not-found')msg='No existe una cuenta con ese email.';else if(e.code==='auth/invalid-email')msg='Email inválido.';else if(e.code==='auth/too-many-requests')msg='Demasiados intentos. Esperá unos minutos.';err.textContent=msg;err.classList.add('on');link.textContent=origTxt;link.style.pointerEvents='';});};
 G('r-code').oninput=function(){var code=this.value.trim().toUpperCase();this.value=code;if(code.length<3){G('r-sector-preview').style.display='none';return;}fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(inv&&inv.active){G('r-sector-display').value=(SECTORS[inv.sector]||inv.sector)+' - '+inv.role;G('r-sector-preview').style.display='block';}else G('r-sector-preview').style.display='none';});};
 G('btn-register').onclick=function(){var code=G('r-code').value.trim().toUpperCase(),name=G('r-name').value.trim(),email=G('r-email').value.trim(),pass=G('r-pass').value.trim();var err=G('r-err'),ok=G('r-ok');err.classList.remove('on');ok.classList.remove('on');if(!code||!name||!email||!pass){err.textContent='Completa todos los campos.';err.classList.add('on');return;}if(pass.length<6){err.textContent='La contrasena debe tener al menos 6 caracteres.';err.classList.add('on');return;}G('btn-register').disabled=true;G('btn-register').innerHTML='<span class="spin"></span> Verificando...';fbDb.ref('invitaciones/'+code).once('value').then(function(snap){var inv=snap.val();if(!inv||!inv.active){err.textContent='Codigo de invitacion invalido o inactivo.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';return;}G('btn-register').innerHTML='<span class="spin"></span> Creando cuenta...';var newProfile=null;fbAuth.createUserWithEmailAndPassword(email,pass).then(function(cred){newProfile={uid:cred.user.uid,name:name,email:email,role:inv.role,sector:inv.sector,createdAt:Date.now(),invCode:code};return fbDb.ref('users/'+cred.user.uid).set(newProfile);}).then(function(){return fbDb.ref('invitaciones/'+code+'/usageCount').transaction(function(n){return(n||0)+1;});}).then(function(){ok.textContent='Cuenta creada! Ingresando...';ok.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';// Si el usuario ya fue logueado automáticamente por Firebase, forzar onLoggedIn con el perfil correcto
 if(fbAuth.currentUser&&newProfile){currentProfile=newProfile;currentProfile.uid=fbAuth.currentUser.uid;onLoggedIn();}}).catch(function(e){var msg='Error al crear la cuenta.';if(e.code==='auth/email-already-in-use')msg='Este email ya tiene una cuenta registrada.';if(e.code==='auth/invalid-email')msg='El email ingresado no es valido.';if(e.code==='auth/weak-password')msg='La contrasena debe tener al menos 6 caracteres.';err.textContent=msg;err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});}).catch(function(){err.textContent='Error de conexion.';err.classList.add('on');G('btn-register').disabled=false;G('btn-register').textContent='Crear cuenta';});};
@@ -1612,9 +1614,9 @@ function renderDetalle(r){var isResolved=r.status==='resuelto';var isAdm=current
 // ===== NUEVO REPORTE — Modal (variante táctil "D") =====
 G('btn-nuevo').onclick=function(){
   var p=currentProfile;
-  // Sector: si el usuario tiene sector fijo, mostramos card. Si no (admin), mostramos select.
+  // Sector: siempre permitir elegir cualquier sector (reportes pueden ser sobre cualquier área)
   var card=G('nr-sector-card'),nameEl=G('nr-sector-name'),sel=G('nr-sector-sel'),chg=G('nr-sector-change');
-  var canChooseSector=!p.sector||p.role==='admin';
+  var canChooseSector=true;
   if(canChooseSector){
     // mostrar select adentro del card, ocultar el nombre estático y la pieza visual queda compacta
     card.style.display='flex';
@@ -1624,14 +1626,6 @@ G('btn-nuevo').onclick=function(){
     sel.value=p.sector||'';
     if(chg)chg.style.display='none';
     if(p.sector)loadTipos(p.sector);else G('nr-tipo').innerHTML='<option value="">Primero elegí un sector</option>';
-  } else {
-    card.style.display='flex';
-    nameEl.parentElement.style.display='block';
-    card.querySelector('.ic').style.display='flex';
-    sel.style.display='none';
-    nameEl.textContent=SECTORS[p.sector]||p.sector;
-    if(chg)chg.style.display='none';
-    loadTipos(p.sector);
   }
   // Reset campos
   G('nr-operario').value='';
