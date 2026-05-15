@@ -766,14 +766,14 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
 .chat-thread-head-role{font-size:11.5px;color:var(--txt3);margin-top:1px}
 .chat-msgs{
   flex:1;overflow-y:auto;padding:18px 18px 12px;
-  display:flex;flex-direction:column;gap:8px;background:var(--bg);
+  display:flex;flex-direction:column;gap:8px;background:#FFFCF4;
 }
 .chat-msg{
   max-width:80%;padding:9px 13px;border-radius:14px;
   font-size:13.5px;line-height:1.45;word-break:break-word;
   font-family:var(--font-sans);
 }
-.chat-msg.in{background:var(--bg2);border:1px solid var(--border);align-self:flex-start;color:var(--txt);border-bottom-left-radius:4px}
+.chat-msg.in{background:#F5F0E1;border:1px solid var(--border);align-self:flex-start;color:var(--txt);border-bottom-left-radius:4px}
 .chat-msg.out{background:var(--verde);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
 .chat-msg-meta{font-size:10.5px;color:var(--txt3);margin-top:3px;padding:0 4px;letter-spacing:.01em}
 .chat-msg.out + .chat-msg-meta{text-align:right}
@@ -801,7 +801,7 @@ body.sb-collapsed .sidebar-toggle .icn{transform:rotate(180deg)}
 .chat-send-btn:disabled{background:var(--border2);box-shadow:none;cursor:default}
 .chat-empty{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:40px;text-align:center;background:var(--bg);
+  padding:40px;text-align:center;background:#FFFCF4;
 }
 
 /* CHAT DOCK (flotante) */
@@ -2164,7 +2164,7 @@ function renderCalGrid(){
     var isSel=dateStr===calSelectedDay;
     var cls='cal-day'+(isToday?' today':'')+(isSel?' selected':'')+(evs.length?' has-event':'');
     var dots=evs.slice(0,3).map(function(){return '<span class="cal-dot"></span>';}).join('');
-    html+='<div class="'+cls+'" onclick="calSelectDay(\"'+dateStr+'\")">'
+    html+='<div class="'+cls+'" onclick="calSelectDay(\''+dateStr+'\')">'
       +'<div class="cal-day-num">'+d+'</div>'
       +(dots?'<div>'+dots+'</div>':'')
       +'</div>';
