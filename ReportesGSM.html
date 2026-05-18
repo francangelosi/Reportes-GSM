@@ -1889,12 +1889,17 @@ function checkNewReports(reports){
     if(!knownReportIds[r.id]){
       knownReportIds[r.id]=true;
       knownReportStatuses[r.id]=r.status;
-      if(!p||!p.sector)return;
+      if(!p)return;
+      var isAdm=p.role==='admin';
       var dirs=getDirigidoArray(r);
-      if(!dirs.length)return;
-      if(dirs.indexOf(p.sector)<0)return;
+      if(!isAdm){
+        if(!p.sector)return;
+        if(!dirs.length)return;
+        if(dirs.indexOf(p.sector)<0)return;
+      }
       var emoji=r.urgency==='alta'?'🔴':r.urgency==='media'?'🟡':'🟢';
-      showToast(emoji+' Reporte para tu sector',r.problemType+' — desde '+(r.sectorLabel||r.sector),r.urgency);
+      var titulo=isAdm?(emoji+' Nuevo reporte'):(emoji+' Reporte para tu sector');
+      showToast(titulo,r.problemType+' — desde '+(r.sectorLabel||r.sector),r.urgency);
       return;
     }
     // 2. Cambio de ESTADO en reporte que el usuario creó
@@ -1919,7 +1924,7 @@ function checkNewReports(reports){
 
 function initFCM(userUid){if(!navigator.serviceWorker)return;try{var messaging=firebase.messaging();navigator.serviceWorker.register('/Reportes-GSM/firebase-messaging-sw.js').then(function(reg){messaging.useServiceWorker(reg);return messaging.getToken({vapidKey:'BI4q_6C3nIbSnxZlFtQ5q4wseeR5R2i93BNLBQlhJ6RzX6Pb3AY4pvlx9FtOVJAJicqrKls1WCJL9VTL2S3PUp0',serviceWorkerRegistration:reg});}).then(function(token){if(token){fbDb.ref('users/'+userUid+'/fcmToken').set(token);console.log('FCM token OK');}}).catch(function(e){console.log('FCM:',e.message);});// Solo mostrar el toast si la notificación push está dirigida al sector del usuario
 messaging.onMessage(function(payload){var data=payload.data||{};var dirigidos=data.dirigidoA?data.dirigidoA.split(','):[];// Si la Cloud Function envió info de destinatarios, filtrar
-if(dirigidos.length>0&&currentProfile&&currentProfile.sector){if(dirigidos.indexOf(currentProfile.sector)<0)return;}var n=payload.notification||{};showToast(n.title||'Nuevo reporte',n.body||'',data.urgency||'media');});}catch(e){console.log('FCM init:',e.message);}}
+if(dirigidos.length>0&&currentProfile&&currentProfile.sector&&currentProfile.role!=='admin'){if(dirigidos.indexOf(currentProfile.sector)<0)return;}var n=payload.notification||{};showToast(n.title||'Nuevo reporte',n.body||'',data.urgency||'media');});}catch(e){console.log('FCM init:',e.message);}}
 
 (function(){var sel=G('filter-dirigido-sel');if(!sel)return;DIRIGIDO_SECTORS.forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=SECTORS[k];sel.appendChild(o);});sel.onchange=function(){filterDirigido=this.value;renderActivos();};})();
 G('btn-del-preview').onclick=function(){
